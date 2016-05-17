@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+
+<drugs last-updated="2016-05-03T05:00:13.610Z" data-structure-version="2.0">
+    <drug id="53c44af3102c1290262dbe38" name="1,25-Dihydroxyvitamin D3" do-not-code="YES">
+        <alternate-name>Calcijex</alternate-name>
+        <alternate-name>Calcitrol</alternate-name>
+        <category>Differentiation inducing agent</category>
+        <remarks>Differentiation Inducing Agent; Vitamin</remarks>
+    </drug>
+    <drug id="53c44af6102c1290262dc009" name="1-Methyl-D-tryptophan" do-not-code="NO">
+        <category>Chemotherapy</category>
+        <sub-category>Enzyme inhibitor</sub-category>
+        <nsc-num>123</nsc-num>
+        <nsc-num>456</nsc-num>
+        <primary-site>Melanoma</primary-site>
+        <primary-site>Other types, NOS</primary-site>
+        <remarks>This agent is being studied in the treatment of melanoma and many other types of cancers. Code in Other Therapy field until FDA approval.</remarks>
+    </drug>
+    <regimen id="53c44b12102c1290262dd3fe" name="super-CM regimen">
+        <alternate-name>CM-5-FU</alternate-name>
+        <alternate-name>CMF</alternate-name>
+        <drug>53c44af3102c1290262dbe38</drug>
+        <drug>53c44af6102c1290262dc009</drug>
+    </regimen>
+</drugs>

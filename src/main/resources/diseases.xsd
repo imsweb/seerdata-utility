@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="diseases" type="DiseasesDataXmlDto" />
+    <xsd:complexType name="DiseasesDataXmlDto">
+        <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="unbounded" name="disease" type="DiseaseXmlDto"/>
+        </xsd:sequence>
+        <xsd:attribute name="last-updated" type="xsd:string" use="optional"/>
+        <xsd:attribute name="data-structure-version" type="xsd:string" use="optional"/>
+        <xsd:attribute name="applicable-dx-year" type="xsd:int" use="optional"/>
+    </xsd:complexType>
+    <xsd:complexType name="DiseaseXmlDto">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="obsolete-new" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="primary-site" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="missing-primary-site-message" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="primary-site-text" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="module-id" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="alternate-name" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="definition" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="abstractor-note" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="diagnosis-method" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="genetics" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="immunophenotype" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="treatment" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="transform-to" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="transform-to-text" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="transform-from" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="transform-from-text" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="same-primary" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="1" name="same-primary-text" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="icd-9-code" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="icd-10-code" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="icd-10-cm-code" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="sign" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="exam" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="progression" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="mortality" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string" use="optional"/>
+        <xsd:attribute name="code-icdO3" type="xsd:string" use="optional"/>
+        <xsd:attribute name="code-icdO3-effective" type="xsd:string" use="optional"/>
+        <xsd:attribute name="code-icdO2" type="xsd:string" use="optional"/>
+        <xsd:attribute name="code-icdO2-effective" type="xsd:string" use="optional"/>
+        <xsd:attribute name="code-icdO1" type="xsd:string" use="optional"/>
+        <xsd:attribute name="code-icdO1-effective" type="xsd:string" use="optional"/>
+        <xsd:attribute name="reportable" type="xsd:string" use="optional"/>
+        <xsd:attribute name="grade" type="xsd:int" use="optional"/>
+        <xsd:attribute name="obsolete" type="xsd:boolean" use="optional"/>
+    </xsd:complexType>
+</xsd:schema>

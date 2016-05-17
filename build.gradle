@@ -1,0 +1,118 @@
+import org.gradle.internal.jvm.Jvm
+
+plugins {
+    id 'java'
+    id 'checkstyle'
+    id 'findbugs'
+    id 'com.bmuschko.nexus' version '2.3.1'
+}
+
+group = 'com.imsweb'
+version = file('VERSION').text
+description = 'SEER*Rx Drugs/regimens and HematoDB Diseases XML definitions and search utilities.'
+
+println "Starting build process using Java ${Jvm.current()}"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'com.thoughtworks.xstream:xstream:1.4.7'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.4.4'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.4'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.4'
+    testCompile 'junit:junit:4.12'
+}
+
+// enforce UTF-8 for all compilation tasks
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+// display the compilation warnings
+compileJava.options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+compileTestJava.options.compilerArgs << '-Xlint:unchecked' << '-Xlint:deprecation'
+
+// customize the manifest
+jar {
+    manifest {
+        attributes('Implementation-Title': project.name,
+                'Implementation-Version': version,
+                'Implementation-Vendor': 'Information Management Services Inc.',
+                'Created-By': System.properties['java.vm.version'] + ' (' + System.properties['java.vm.vendor'] + ')',
+                'Built-By': System.getProperty('user.name'),
+                'Built-Date': new Date(),
+                'Built-JDK': System.getProperty('java.version')
+        )
+    }
+}
+
+// checkstyle plugin settings
+checkstyle {
+    ignoreFailures = true
+    configFile = file("config/checkstyle/checkstyle.xml")
+}
+
+// findbugs plugin settings
+findbugs {
+    ignoreFailures = true
+    excludeFilter = file("config/findbugs/findbugs-exclude.xml")
+}
+
+// needed to deploy to Maven Central
+modifyPom {
+    project {
+        name 'SEER Data Utility'
+        description 'SEER*Rx Drugs/regimens and HematoDB Diseases XML definitions and search utilities.'
+        url 'https://github.com/imsweb/seerdata-utility'
+        inceptionYear '2016'
+
+        scm {
+            url 'https://github.com/imsweb/seerdata-utility'
+            connection 'scm:https://github.com/imsweb/seerdata-utility.git'
+            developerConnection 'scm:git@github.com:imsweb/seerdata-utility.git'
+        }
+
+        licenses {
+            license {
+                name 'A modified BSD License (BSD)'
+                url 'https://github.com/imsweb/layout/blob/master/LICENSE'
+                distribution 'repo'
+            }
+        }
+
+        developers {
+            developer {
+                id 'depryf'
+                name 'Fabian Depry'
+                email 'depryf@imsweb.com'
+            }
+        }
+    }
+}
+// this will add the XML-related tasks
+configurations {
+    xjc
+}
+
+dependencies {
+    xjc group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.7'
+}
+
+task generateHematodbXmlEntities << {
+    ant.taskdef(name: 'xjc', classname: 'com.sun.tools.xjc.XJCTask', classpath: configurations.xjc.asPath)
+    ant.xjc(destdir: 'src/main/java', schema: 'src/main/resources/diseases.xsd', package: 'com.imsweb.data.hematodb.xml', extension: 'true') {
+        arg(line: '-no-header')
+    }
+}
+
+task generateSeerrxXmlEntities << {
+    ant.taskdef(name: 'xjc', classname: 'com.sun.tools.xjc.XJCTask', classpath: configurations.xjc.asPath)
+    ant.xjc(destdir: 'src/main/java', schema: 'src/main/resources/drugs.xsd', package: 'com.imsweb.data.seerrx.xml', extension: 'true') {
+        arg(line: '-no-header')
+    }
+}
+
+// Gradle wrapper, this allows to build the project without having to install Gradle!
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
+}

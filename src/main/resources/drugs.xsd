@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:element name="drugs" type="DrugsDataXmlDto" />
+    <xsd:complexType name="DrugsDataXmlDto">
+        <xsd:sequence>
+            <xsd:element minOccurs="1" maxOccurs="unbounded" name="drug" type="DrugXmlDto" />
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="regimen" type="RegimenXmlDto" />
+        </xsd:sequence>
+        <xsd:attribute name="last-updated" type="xsd:string" use="optional"/>
+        <xsd:attribute name="data-structure-version" type="xsd:string" use="optional"/>
+    </xsd:complexType>
+    <xsd:complexType name="DrugXmlDto">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="alternate-name" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="abbreviation" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="category" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="sub-category" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="nsc-num" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="primary-site" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="histology" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="remarks" type="xsd:string" />
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required" />
+        <xsd:attribute name="name" type="xsd:string" use="required" />        
+        <xsd:attribute name="do-not-code" type="xsd:string" use="optional" />
+    </xsd:complexType>
+    <xsd:complexType name="RegimenXmlDto">
+        <xsd:sequence>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="alternate-name" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="primary-site" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="histology" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="radiation" type="xsd:string" />
+            <xsd:element minOccurs="0" maxOccurs="1" name="remarks" type="xsd:string" />            
+            <xsd:element minOccurs="1" maxOccurs="unbounded" name="drug" type="xsd:string" />
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required" />
+        <xsd:attribute name="name" type="xsd:string" use="required" />
+    </xsd:complexType>
+</xsd:schema>

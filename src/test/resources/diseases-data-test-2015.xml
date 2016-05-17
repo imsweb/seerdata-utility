@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<diseases last-updated="2015-03-17T05:00:28.661Z" data-structure-version="2.0" applicable-dx-year="2015">
+    <disease id="51f6cf56e3e27c3994bd5306" name="ALK-positive large B-cell lymphoma" code-icdO3="9737/3" code-icdO3-effective="2010 and later" reportable="2010 and later" grade="6" obsolete="false">
+        <missing-primary-site-message>See Module 7</missing-primary-site-message>
+        <primary-site-text>Most common sites of involvement: lymph nodes, mediastinal mass, nasopharynx, tongue, stomach, bone and soft tissues. </primary-site-text>
+        <alternate-name>ALK-positive LBCL</alternate-name>
+        <alternate-name>ALK-positive plasmablastic B-cell lymphoma</alternate-name>
+        <alternate-name>Large B-cell lymphoma expressing the ALK kinase and lacking the t(2;5) translocation</alternate-name>
+        <definition>This is a neoplasm of ALK-positive monomorphic large immunoblast-like B cells, sometimes with plasmablastic differentiation. This lymphoma is very rare (&lt;1% of DLBCL) with less than 40 cases reported to date.</definition>
+        <abstractor-note>(This code is effective for cases diagnosed 2010 and later. For cases diagnosed prior to 2010, see code 9684/3.) 
+
+Most patients present with Stage III/IV. Because these tumors are negative for CD20 antigen, they are insensitive to rituximab.</abstractor-note>
+        <diagnosis-method>Genetic testing</diagnosis-method>
+        <diagnosis-method>Histologic confirmation</diagnosis-method>
+        <diagnosis-method>Immunophenotyping</diagnosis-method>
+        <diagnosis-method>Karyotyping</diagnosis-method>
+        <genetics>CLTC-ALK fusion gene</genetics>
+        <genetics>Immunoglobulin genes are clonally rearranged</genetics>
+        <genetics>t(2;17)(p23;q23)</genetics>
+        <immunophenotype>ALK-positive</immunophenotype>
+        <immunophenotype>CD3-</immunophenotype>
+        <immunophenotype>CD20-</immunophenotype>
+        <immunophenotype>CD30-</immunophenotype>
+        <treatment>Chemotherapy</treatment>
+        <same-primary>51f6cf58e3e27c3994bd53e4</same-primary>
+        <icd-9-code>200.6 Anaplastic large cell lymphoma</icd-9-code>
+        <icd-10-code>C83.3 Diffuse non-Hodgkins lymphoma, large cell (diffuse)</icd-10-code>
+        <icd-10-cm-code>C84.6 Anaplastic large cell lymphoma, ALK positive</icd-10-cm-code>
+        <sign>Drenching night sweats</sign>
+        <sign>Fatigue</sign>
+        <sign>Fever (for no known reason)</sign>
+        <sign>Mediastinal mass</sign>
+        <sign>Pain in the chest, abdomen, or bones (for no known reason)</sign>
+        <sign>Painless swelling in the lymph nodes</sign>
+        <sign>Skin rash or itchy skin</sign>
+        <sign>Weight loss (for no known reason)</sign>
+        <exam>Blood chemistry studies</exam>
+        <exam>Bone marrow aspiration and biopsy</exam>
+        <exam>CT (CAT) scan</exam>
+        <exam>Complete blood count (CBC)</exam>
+        <exam>Physical exam and history (H&amp;P)</exam>
+        <mortality>Age: 36 years median age (9-70 years range)</mortality>
+        <mortality>Incidence: &lt;1% of DLBCL lymphomas</mortality>
+        <mortality>Sex: male predominance</mortality>
+        <mortality>Survival: median survival 11 months; &gt;156 months survival for children</mortality>
+    </disease>
+    <disease id="51f6cf58e3e27c3994bd53e4" name="Acute basophilic leukemia" code-icdO3="9870/3" code-icdO3-effective="2001 and later" code-icdO2="9870/3" code-icdO2-effective="1992-2000" code-icdO1="9870/3" code-icdO1-effective="1978-1991" reportable="1978 and later" obsolete="false">
+        <primary-site>C421</primary-site>
+        <primary-site-text>Primary site must be bone marrow (C421)</primary-site-text>
+        <definition>An acute myeloid leukemia in which the primary differentiation is to basophils.
+
+Rare form of acute myeloid leukemia where blasts are accompanied by abnormal basophils in all stages of differentiation.</definition>
+        <abstractor-note>Cutaneous involvement, organomegaly, lytic lesion, and symptoms relating to hyperhistaminemia may be present.  Basophilic leukemia is differentiated from other AML subtypes with basophilia using basophilia immunological markers, light microscopic cytochemistry for myeloperoxidase and electron microscopy.
+
+If the leukemia occurs before or simultaneously with Myeloid Sarcoma (9930/3), see M3 and Module 5: PH10</abstractor-note>
+        <diagnosis-method>Bone marrow biopsy</diagnosis-method>
+        <diagnosis-method>Immunophenotyping</diagnosis-method>
+        <diagnosis-method>Peripheral blood smear</diagnosis-method>
+        <immunophenotype>CD11b+</immunophenotype>
+        <immunophenotype>CD13+</immunophenotype>
+        <immunophenotype>CD22+ (possible)</immunophenotype>
+        <immunophenotype>CD203c+</immunophenotype>
+        <immunophenotype>HLA-DR+ (possible)</immunophenotype>
+        <immunophenotype>TdT+ (possible)</immunophenotype>
+        <treatment>Chemotherapy</treatment>
+        <treatment>Stem cell transplant</treatment>
+        <same-primary>51f6cf56e3e27c3994bd5306</same-primary>
+        <icd-9-code>205.1 Chronic myeloid leukemia</icd-9-code>
+        <icd-10-code>C92.1 Chronic myeloid leukemia</icd-10-code>
+        <icd-10-cm-code>C94.8 Other specified leukemias</icd-10-cm-code>
+        <sign>Bone marrow failure</sign>
+        <sign>Cutaneous involvement</sign>
+        <sign>Easy bruising or bleeding</sign>
+        <sign>Fatigue</sign>
+        <sign>Fever</sign>
+        <sign>Hyperhistaminemia</sign>
+        <sign>Lytic lesions</sign>
+        <sign>Organomegaly</sign>
+        <sign>Petechiae</sign>
+        <sign>Shortness of breath</sign>
+        <sign>Weakness</sign>
+        <sign>Weight loss or loss of appetite</sign>
+        <exam>Bone marrow aspiration and biopsy</exam>
+        <exam>Complete blood count (CBC)</exam>
+        <exam>CT (CAT) scan</exam>
+        <exam>Cytogenetic analysis</exam>
+        <exam>Immunophenotyping</exam>
+        <exam>Lumbar puncture</exam>
+        <exam>Peripheral blood smear</exam>
+        <exam>Physical exam and history</exam>
+        <exam>Reverse transcription-polymerase chain reaction test (RT-PCR)</exam>
+        <mortality>Incidence: &lt;1% of all AML cases</mortality>
+        <mortality>Survival: limited information, known cases had poor prognosis</mortality>
+    </disease>
+    <disease id="51f6cf59e3e27c3994bd543e" name="Acute biphenotypic leukemia with" code-icdO3="9805/3" code-icdO3-effective="2001-2009" reportable="2001-2009" obsolete="true">
+        <obsolete-new>51f6cf59e3e27c3994bd5459</obsolete-new>
+        <obsolete-new>51f6cf59e3e27c3994bd546e</obsolete-new>
+        <obsolete-new>51f6cf59e3e27c3994bd5474</obsolete-new>
+        <obsolete-new>51f6cf59e3e27c3994bd5462</obsolete-new>
+        <primary-site>C421</primary-site>
+        <icd-9-code>208.0 Acute leukemia of unspecified cell type</icd-9-code>
+        <icd-10-code>C95.0 Acute leukemia of unspecified cell type</icd-10-code>
+        <icd-10-cm-code>C95.0 Acute leukemia of unspecified cell type</icd-10-cm-code>
+    </disease>
+</diseases>
