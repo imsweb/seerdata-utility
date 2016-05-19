@@ -15,7 +15,7 @@ The library does NOT contain the actual data, only the entities to handle it. Th
 
 ## Download
 
-The library will be available soon on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.imsweb%22%20AND%20a%3A%seerdata-utility%22).
+The library is available on [Maven Central](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.imsweb%22%20AND%20a%3A%seerdata-utility%22).
 
 To include it to your Maven or Gradle project, use the group ID `com.imsweb` and the artifact ID `seerdata-utility`.
 
