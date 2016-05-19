@@ -29,7 +29,7 @@ import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
-import com.thoughtworks.xstream.io.xml.StaxDriver;
+import com.thoughtworks.xstream.io.xml.Xpp3Driver;
 
 import com.imsweb.seerdata.SearchUtils;
 import com.imsweb.seerdata.SearchUtils.SearchMode;
@@ -218,7 +218,7 @@ public class HematoDbUtils {
     }
 
     private static XStream createDiseasesXStream() {
-        XStream xstream = new XStream(new PureJavaReflectionProvider(), new StaxDriver() {
+        XStream xstream = new XStream(new PureJavaReflectionProvider(), new Xpp3Driver() {
             @Override
             public HierarchicalStreamWriter createWriter(Writer out) {
                 return new PrettyPrintWriter(out, "    ");
