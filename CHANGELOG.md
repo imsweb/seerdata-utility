@@ -2,6 +2,7 @@
 
 **Changes in version 1.5**
 
+ - Now using XStreams instead of JAXB for all XML-related operations.
  - Fixed some getters from the YearBasedDiseaseDto class so they return a single String instead of a list of String to agree with the XML data model.
  - Move all year-based entities into a "json" package.
  - Renamed package "com.imsweb.data" into "com.imsweb.seerdata"; made this change as part of moving the library to GitHub.
