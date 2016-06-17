@@ -76,13 +76,13 @@ public class DiseaseXmlDto {
     @XStreamImplicit(itemFieldName = "diagnosis-method")
     private List<String> diagnosisMethod;
 
-    @XStreamImplicit
+    @XStreamImplicit(itemFieldName = "genetics")
     private List<String> genetics;
 
-    @XStreamImplicit
+    @XStreamImplicit(itemFieldName = "immunophenotype")
     private List<String> immunophenotype;
 
-    @XStreamImplicit
+    @XStreamImplicit(itemFieldName = "treatment")
     private List<String> treatment;
 
     @XStreamImplicit(itemFieldName = "transform-to")
@@ -112,16 +112,16 @@ public class DiseaseXmlDto {
     @XStreamImplicit(itemFieldName = "icd-10-cm-code")
     private List<String> icd10CmCode;
 
-    @XStreamImplicit
+    @XStreamImplicit(itemFieldName = "sign")
     private List<String> sign;
 
-    @XStreamImplicit
+    @XStreamImplicit(itemFieldName = "exam")
     private List<String> exam;
 
-    @XStreamImplicit
+    @XStreamImplicit(itemFieldName = "progression")
     private List<String> progression;
 
-    @XStreamImplicit
+    @XStreamImplicit(itemFieldName = "mortality")
     private List<String> mortality;
 
     public DiseaseXmlDto() {
