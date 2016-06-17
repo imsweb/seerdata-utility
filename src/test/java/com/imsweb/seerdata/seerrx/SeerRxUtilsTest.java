@@ -6,12 +6,13 @@ package com.imsweb.seerdata.seerrx;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
@@ -41,7 +42,7 @@ public class SeerRxUtilsTest {
             }
 
             // make sure all implicit collections are properly map
-            try (Reader reader = new FileReader(file)) {
+            try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
                 try (StringWriter writer = new StringWriter()) {
                     IOUtils.copy(reader, writer);
                     if (writer.toString().contains("<string>"))
