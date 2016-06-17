@@ -1,5 +1,9 @@
 ## SEER Data Utility Library Version History
 
+**Changes in version 1.5.1**
+
+ - Fixed a wrong mapping with XStreams that wrote some disease collections with the tag "string" instead of the actual one.
+
 **Changes in version 1.5**
 
  - Now using XStreams instead of JAXB for all XML-related operations.
