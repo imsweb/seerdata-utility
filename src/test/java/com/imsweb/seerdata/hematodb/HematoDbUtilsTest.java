@@ -6,12 +6,16 @@ package com.imsweb.seerdata.hematodb;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Reader;
+import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -37,6 +41,15 @@ public class HematoDbUtilsTest {
             // then write it
             try (OutputStream fos = new FileOutputStream(file)) {
                 HematoDbUtils.writeDiseasesData(fos, data);
+            }
+            
+            // make sure all implicit collections are properly map
+            try (Reader reader = new FileReader(file)) {
+                try (StringWriter writer = new StringWriter()) {
+                    IOUtils.copy(reader, writer);
+                    if (writer.toString().contains("<string>"))
+                        Assert.fail("Found string tag, make sure the implicit collections are properly mapped!");
+                }
             }
 
             // and finally read it again and check the values again
