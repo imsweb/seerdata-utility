@@ -5,7 +5,6 @@ package com.imsweb.seerdata.hematodb.json;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -301,8 +300,8 @@ public class YearBasedDiseaseDto {
         _icdO1Morphology = icdO1Morphology;
     }
 
-    public List<String> getIcd10CmCode(Integer year) {
-        return getDateBasedStringList(year, _icd10CmCode);
+    public List<DateRangeString> getIcd10CmCode() {
+        return _icd10CmCode;
     }
 
     public void setIcd10CmCode(List<DateRangeString> icd10CmCode) {
@@ -502,34 +501,6 @@ public class YearBasedDiseaseDto {
     }
 
     /**
-     * Returns a list of the values from the DateRangeString list that are valid for the given year (it's considered valid in the whole year if it's valid at any time during that year)
-     * @param year Year to get values for
-     * @param list List of DateRangeString values
-     * @return List of valid String values
-     */
-    private List<String> getDateBasedStringList(Integer year, List<DateRangeString> list) {
-        List<String> result = new ArrayList<>();
-        
-        Pattern yearPattern = Pattern.compile("\\d\\d\\d\\d.+");
-
-        if (year != null && list != null) {
-            YearRange validYearRange = getValid();
-            int validStart = validYearRange == null || validYearRange.getStartYear() == null ? 0 : validYearRange.getStartYear();
-            int validEnd = validYearRange == null || validYearRange.getEndYear() == null ? 9999 : validYearRange.getEndYear();
-            for (DateRangeString val : list) {
-                if (val.getValue() != null) {
-                    int start = val.getStartDate() == null || !yearPattern.matcher(val.getStartDate()).matches() ? validStart : Integer.parseInt(val.getStartDate().substring(0, 4));
-                    int end = val.getEndDate() == null || !yearPattern.matcher(val.getEndDate()).matches() ? validEnd : Integer.parseInt(val.getEndDate().substring(0, 4));
-                    if (year >= start && year <= end)
-                        result.add(val.getValue());
-                }
-            }
-        }
-
-        return result;
-    }
-    
-    /**
      * Returns a list of the values from the YearRangeString list that are valid for the given year
      * @param year Year to get values for
      * @param list List of YearRangeString values
@@ -638,7 +609,10 @@ public class YearBasedDiseaseDto {
             disease.getIcd9Code().addAll(getIcd9Code());
         if (getIcd10Code() != null)
             disease.getIcd10Code().addAll(getIcd10Code());
-        disease.getIcd10CmCode().addAll(getIcd10CmCode(year));
+        if (getIcd10CmCode() != null)
+            for (DateRangeString range : getIcd10CmCode())
+                if (range.getValue() != null)
+                    disease.getIcd10CmCode().add(range.getValue());
         disease.setGrade(getGrade(year));
         if ((getValid().getStartYear() == null || getValid().getStartYear() <= year) && (getValid().getEndYear() == null || getValid().getEndYear() >= year))
             disease.setObsolete(false);

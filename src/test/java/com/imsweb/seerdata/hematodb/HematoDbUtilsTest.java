@@ -203,12 +203,6 @@ public class HematoDbUtilsTest {
                 if (HematoDbUtils.getInstance().getAllYearBasedDiseases().containsKey(s))
                     Assert.fail("Disease #" + disease.getId() + " has a good same primary reference: " + s);
         }
-
-        // test the date range logic (valid dates are 2014/01/01 to 2015/12/31, so it's good in 2014 and 2015)
-        Assert.assertTrue(HematoDbUtils.getInstance().getAllYearBasedDiseases().get("51f6cf59e3e27c3994bd543e").getIcd10CmCode(2013).isEmpty());
-        Assert.assertFalse(HematoDbUtils.getInstance().getAllYearBasedDiseases().get("51f6cf59e3e27c3994bd543e").getIcd10CmCode(2014).isEmpty());
-        Assert.assertFalse(HematoDbUtils.getInstance().getAllYearBasedDiseases().get("51f6cf59e3e27c3994bd543e").getIcd10CmCode(2015).isEmpty());
-        Assert.assertTrue(HematoDbUtils.getInstance().getAllYearBasedDiseases().get("51f6cf59e3e27c3994bd543e").getIcd10CmCode(2016).isEmpty());
         
         //Test searching- current year
         Assert.assertFalse(HematoDbUtils.getInstance().searchDiseases("acute \"leukemia with\"", SearchMode.OR).isEmpty());
