@@ -244,6 +244,7 @@ public class HematoDbUtilsTest {
         dto.setName("ZZZ1");
         dto.setCodeIcdO3("ZZZ2");
         dto.setAbstractorNote("ZZZ3");
+        dto.setCodeIcdO1("CODE1, CODE2");
         data.getDisease().add(dto);
         HematoDbUtils.registerInstance(data);
 
@@ -297,6 +298,11 @@ public class HematoDbUtilsTest {
             Assert.assertTrue(HematoDbUtils.getInstance(2010).searchDiseases("val1 \"val2 val3\" val4 val5", SearchMode.AND, 2010).isEmpty());
             Assert.assertTrue(HematoDbUtils.getInstance(2010).searchDiseases("val1 \"val1 val5\" val4", SearchMode.AND, 2010).isEmpty());
             Assert.assertTrue(HematoDbUtils.getInstance(2010).searchDiseases("\"val4 val3 val2 val1\"", SearchMode.AND, 2010).isEmpty());
+            
+            // test searching on ICD-O-1, which is a list of values represented by a CSV string
+            Assert.assertFalse(HematoDbUtils.getInstance(2010).searchDiseases("CODE1", SearchMode.AND, 2010).isEmpty());
+            Assert.assertFalse(HematoDbUtils.getInstance(2010).searchDiseases("CODE2", SearchMode.AND, 2010).isEmpty());
+            Assert.assertTrue(HematoDbUtils.getInstance(2010).searchDiseases("CODE1, CODE2", SearchMode.AND, 2010).isEmpty());
         }
         finally {
             HematoDbUtils.unregisterInstance(2010);

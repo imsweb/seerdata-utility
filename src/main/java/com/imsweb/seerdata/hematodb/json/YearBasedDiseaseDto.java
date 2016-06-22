@@ -65,9 +65,9 @@ public class YearBasedDiseaseDto {
     @JsonProperty("definition")
     protected List<YearRangeString> _definition;
     @JsonProperty("icdO2_morphology")
-    protected String _icdO2Morphology;
+    protected List<String> _icdO2Morphology;
     @JsonProperty("icdO1_morphology")
-    protected String _icdO1Morphology;
+    protected List<String> _icdO1Morphology;
     @JsonProperty("icd_10cm_code")
     protected List<DateRangeString> _icd10CmCode;
     @JsonProperty("icd_10_code")
@@ -285,19 +285,19 @@ public class YearBasedDiseaseDto {
         _definition = definition;
     }
 
-    public String getIcdO2Morphology() {
+    public List<String> getIcdO2Morphology() {
         return _icdO2Morphology;
     }
 
-    public void setIcdO2Morphology(String icdO2Morphology) {
+    public void setIcdO2Morphology(List<String> icdO2Morphology) {
         _icdO2Morphology = icdO2Morphology;
     }
 
-    public String getIcdO1Morphology() {
+    public List<String> getIcdO1Morphology() {
         return _icdO1Morphology;
     }
 
-    public void setIcdO1Morphology(String icdO1Morphology) {
+    public void setIcdO1Morphology(List<String> icdO1Morphology) {
         _icdO1Morphology = icdO1Morphology;
     }
 
@@ -648,8 +648,24 @@ public class YearBasedDiseaseDto {
         disease.setCodeIcdO1Effective(getIcdO1Effective() == null ? null : getIcdO1Effective().toString());
         disease.setCodeIcdO2Effective(getIcdO2Effective() == null ? null : getIcdO2Effective().toString());
         disease.setCodeIcdO3Effective(getIcdO3Effective() == null ? null : getIcdO3Effective().toString());
-        disease.setCodeIcdO1(getIcdO1Morphology());
-        disease.setCodeIcdO2(getIcdO2Morphology());
+        if (getIcdO1Morphology() != null) {
+            StringBuilder buf = new StringBuilder();
+            for (String s : getIcdO1Morphology())
+                buf.append(s).append(", ");
+            if (buf.length() > 0) {
+                buf.setLength(buf.length() - 2);
+                disease.setCodeIcdO1(buf.toString());
+            }
+        }
+        if (getIcdO2Morphology() != null) {
+            StringBuilder buf = new StringBuilder();
+            for (String s : getIcdO2Morphology())
+                buf.append(s).append(", ");
+            if (buf.length() > 0) {
+                buf.setLength(buf.length() - 2);
+                disease.setCodeIcdO2(buf.toString());
+            }
+        }
         disease.setCodeIcdO3(getIcdO3Morphology());
         disease.setName(getName());
         disease.setId(getId());

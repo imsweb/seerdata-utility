@@ -92,7 +92,7 @@ If the leukemia occurs before or simultaneously with Myeloid Sarcoma (9930/3), s
         <mortality>Incidence: &lt;1% of all AML cases</mortality>
         <mortality>Survival: limited information, known cases had poor prognosis</mortality>
     </disease>
-    <disease id="51f6cf59e3e27c3994bd543e" name="Acute biphenotypic leukemia with" code-icdO3="9805/3" code-icdO3-effective="2001-2009" reportable="2001-2009" obsolete="true">
+    <disease id="51f6cf59e3e27c3994bd543e" name="Acute biphenotypic leukemia with" code-icdO3="9805/3" code-icdO3-effective="2001-2009" reportable="2001-2009" obsolete="true" code-icdO2="9805/3, 1111/3">
         <obsolete-new>51f6cf59e3e27c3994bd5459</obsolete-new>
         <obsolete-new>51f6cf59e3e27c3994bd546e</obsolete-new>
         <obsolete-new>51f6cf59e3e27c3994bd5474</obsolete-new>

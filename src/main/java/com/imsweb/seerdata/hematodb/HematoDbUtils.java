@@ -12,6 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -20,6 +21,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -50,6 +52,8 @@ import com.imsweb.seerdata.hematodb.xml.DiseasesDataXmlDto;
 public class HematoDbUtils {
 
     private static final DateFormat _DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    
+    private static final Pattern _CSV_LIST_PATTERN = Pattern.compile(",");
 
     /**
      * Mapper for reading and writing JSON files
@@ -485,8 +489,8 @@ public class HematoDbUtils {
 
         score += SearchUtils.weightField(dto.getName(), 100, terms, searchMode);
         score += SearchUtils.weightField(dto.getCodeIcdO3(), 100, terms, searchMode);
-        score += SearchUtils.weightField(dto.getCodeIcdO2(), 80, terms, searchMode);
-        score += SearchUtils.weightField(dto.getCodeIcdO1(), 80, terms, searchMode);
+        score += SearchUtils.weightField(createListFromCsvString(dto.getCodeIcdO2()), 80, terms, searchMode);
+        score += SearchUtils.weightField(createListFromCsvString(dto.getCodeIcdO1()), 80, terms, searchMode);
         score += SearchUtils.weightField(dto.getPrimarySite(), 80, terms, searchMode);
         score += SearchUtils.weightField(dto.getIcd9Code(), 50, terms, searchMode);
         score += SearchUtils.weightField(dto.getIcd10Code(), 50, terms, searchMode);
@@ -510,6 +514,12 @@ public class HematoDbUtils {
         score += SearchUtils.weightField(dto.getMissingPrimarySiteMessage(), 5, terms, searchMode);
 
         return score;
+    }
+    
+    private List<String> createListFromCsvString(String value) {
+        if (value == null || value.isEmpty())
+            return null;
+        return Arrays.asList(_CSV_LIST_PATTERN.split(value));
     }
 
     /**
