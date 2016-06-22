@@ -518,8 +518,8 @@ public class YearBasedDiseaseDto {
             int validEnd = validYearRange == null || validYearRange.getEndYear() == null ? 9999 : validYearRange.getEndYear();
             for (DateRangeString val : list) {
                 if (val.getValue() != null) {
-                    int start = val.getStartDate() == null || !yearPattern.matcher(val.getStartDate()).matches() ? validStart : Integer.valueOf(val.getStartDate().substring(0, 4));
-                    int end = val.getEndDate() == null || !yearPattern.matcher(val.getEndDate()).matches() ? validEnd : Integer.valueOf(val.getEndDate().substring(0, 4));
+                    int start = val.getStartDate() == null || !yearPattern.matcher(val.getStartDate()).matches() ? validStart : Integer.parseInt(val.getStartDate().substring(0, 4));
+                    int end = val.getEndDate() == null || !yearPattern.matcher(val.getEndDate()).matches() ? validEnd : Integer.parseInt(val.getEndDate().substring(0, 4));
                     if (year >= start && year <= end)
                         result.add(val.getValue());
                 }
