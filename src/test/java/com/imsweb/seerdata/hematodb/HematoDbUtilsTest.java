@@ -352,4 +352,72 @@ public class HematoDbUtilsTest {
             HematoDbUtils.unregisterInstance(2015);
         }
     }
+
+    @Test
+    public void testIsAcuteTransformation() throws IOException {
+        HematoDbUtils.registerInstance(HematoDbUtils.readDiseasesData(Thread.currentThread().getContextClassLoader().getResourceAsStream("diseases-data-test-2015.xml")));
+        try {
+            boolean thrown = false;
+            try {
+                HematoDbUtils.getInstance(2015).isAcuteTransformation("9737/3", "9870/3", 2014);
+            }
+            catch (RuntimeException e) {
+                thrown = true;
+            }
+            if (!thrown)
+                Assert.fail("Exception was not thrown for incompatible years.");
+
+            // Invalid codes
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation(null, null, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation("9737/3", null, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation(null, "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation("  ", "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation("8000/3", "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation("9737/3", "9737/03", 2015));
+
+            Assert.assertTrue(HematoDbUtils.getInstance(2015).isAcuteTransformation("9737/3", "9870/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation("9870/3", "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation("9870/3", "9805/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation("9805/3", "9870/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation("9805/3", "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isAcuteTransformation("9737/3", "9805/3", 2015));
+        }
+        finally {
+            HematoDbUtils.unregisterInstance(2015);
+        }
+    }
+
+    @Test
+    public void testIsChronicTransformation() throws IOException {
+        HematoDbUtils.registerInstance(HematoDbUtils.readDiseasesData(Thread.currentThread().getContextClassLoader().getResourceAsStream("diseases-data-test-2015.xml")));
+        try {
+            boolean thrown = false;
+            try {
+                HematoDbUtils.getInstance(2015).isChronicTransformation("9737/3", "9870/3", 2014);
+            }
+            catch (RuntimeException e) {
+                thrown = true;
+            }
+            if (!thrown)
+                Assert.fail("Exception was not thrown for incompatible years.");
+
+            // Invalid codes
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation(null, null, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation("9737/3", null, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation(null, "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation("  ", "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation("8000/3", "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation("9870/03", "9737/3", 2015));
+
+            Assert.assertTrue(HematoDbUtils.getInstance(2015).isChronicTransformation("9870/3", "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation("9737/3", "9870/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation("9870/3", "9805/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation("9805/3", "9870/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation("9805/3", "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance(2015).isChronicTransformation("9737/3", "9805/3", 2015));
+        }
+        finally {
+            HematoDbUtils.unregisterInstance(2015);
+        }
+    }
 }
