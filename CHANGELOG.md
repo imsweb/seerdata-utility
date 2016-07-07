@@ -1,8 +1,10 @@
 ## SEER Data Utility Library Version History
 
-**Changes in version 1.5.2**
+**Changes in version 1.6**
 
  - Changed the HematoDB utility class to add methods to determine if one disease is acute or chronic transformation of the other.
+ - Changed ICD-O-1 and ICD-O-2 codes on the diseases to become a list of codes instead of a single code.
+ - Changed ICD-10CM codes to be tied to a full date (yyyy-MM-dd).
 
 **Changes in version 1.5.1**
 
