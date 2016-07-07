@@ -23,6 +23,7 @@ Most patients present with Stage III/IV. Because these tumors are negative for C
         <immunophenotype>CD30-</immunophenotype>
         <treatment>Chemotherapy</treatment>
         <same-primary>51f6cf58e3e27c3994bd53e4</same-primary>
+        <transform-to>51f6cf58e3e27c3994bd53e4</transform-to>
         <icd-9-code>200.6 Anaplastic large cell lymphoma</icd-9-code>
         <icd-10-code>C83.3 Diffuse non-Hodgkins lymphoma, large cell (diffuse)</icd-10-code>
         <icd-10-cm-code>C84.6 Anaplastic large cell lymphoma, ALK positive</icd-10-cm-code>
@@ -65,6 +66,7 @@ If the leukemia occurs before or simultaneously with Myeloid Sarcoma (9930/3), s
         <treatment>Chemotherapy</treatment>
         <treatment>Stem cell transplant</treatment>
         <same-primary>51f6cf56e3e27c3994bd5306</same-primary>
+        <transform-from>51f6cf56e3e27c3994bd5306</transform-from>
         <icd-9-code>205.1 Chronic myeloid leukemia</icd-9-code>
         <icd-10-code>C92.1 Chronic myeloid leukemia</icd-10-code>
         <icd-10-cm-code>C94.8 Other specified leukemias</icd-10-cm-code>

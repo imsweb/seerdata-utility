@@ -647,6 +647,193 @@ public class HematoDbUtils {
     }
 
     /**
+     * @param leftCode Left code to compare
+     * @param rightCode Right code to compare
+     * @return Returns true if the right code is in acute transformation (transform to) of the left code
+     */
+    public boolean isAcuteTransformation(String leftCode, String rightCode) {
+        return isAcuteTransformation(leftCode, rightCode, Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    /**
+     * Compares the two ICD-O-3 morphology codes and determine whether the right code is in acute transformation (transform to) of the left code
+     * <p/>
+     * Codes should have the format "9999/9".
+     * <p/>
+     * If any of the codes is not a valid code (see isValidIcdCodeForMultiplePrimariesCalculation()), false is returned.
+     * <p/>
+     * Created on July 6, 2016 by Sewbesew Bekele
+     * @param leftCode left code to compare
+     * @param rightCode right code to compare
+     * @param year The requested DX year, cannot be null
+     * @return true if the right code is in acute transformation (transform to) of the left code
+     */
+    public boolean isAcuteTransformation(String leftCode, String rightCode, Integer year) {
+        if (year == null)
+            throw new RuntimeException("Year is required.");
+
+        //If the requested year doesn't match the data's applicable year, there can be no results
+        if (_applicableDxYear != null && !_applicableDxYear.equals(year))
+            throw new RuntimeException("The requested DX year does not match the applicable DX year.");
+
+        // get left disease
+        if (leftCode == null)
+            return false;
+        leftCode = leftCode.trim();
+        if (leftCode.isEmpty())
+            return false;
+        DiseaseDto leftDisease = null;
+        if (_diseases != null) {
+            for (DiseaseDto disease : _diseases.values()) {
+                if (leftCode.equals(disease.getCodeIcdO3())) {
+                    leftDisease = disease;
+                    break;
+                }
+            }
+        }
+        else if (_yearBasedDiseases != null) {
+            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+                if (leftCode.equals(disease.getIcdO3Morphology())) {
+                    leftDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
+                    if (leftDisease == null) {
+                        leftDisease = disease.getDiseaseDto(year);
+                        _diseasesPerYear.put(getLruId(disease.getId(), year), leftDisease);
+                    }
+                    break;
+                }
+            }
+        }
+        if (leftDisease == null)
+            return false;
+
+        // get the right disease
+        if (rightCode == null)
+            return false;
+        rightCode = rightCode.trim();
+        if (rightCode.isEmpty())
+            return false;
+        DiseaseDto rightDisease = null;
+        if (_diseases != null) {
+            for (DiseaseDto disease : _diseases.values()) {
+                if (rightCode.equals(disease.getCodeIcdO3())) {
+                    rightDisease = disease;
+                    break;
+                }
+            }
+        }
+        else if (_yearBasedDiseases != null) {
+            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+                if (rightCode.equals(disease.getIcdO3Morphology())) {
+                    rightDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
+                    if (rightDisease == null) {
+                        rightDisease = disease.getDiseaseDto(year);
+                        _diseasesPerYear.put(getLruId(disease.getId(), year), rightDisease);
+                    }
+                    break;
+                }
+            }
+        }
+        if (rightDisease == null)
+            return false;
+
+        return leftDisease.getTransformTo().contains(rightDisease.getId());
+    }
+
+    /**
+     * @param leftCode Left code to compare
+     * @param rightCode Right code to compare
+     * @return Returns true if the right code is in chronic transformation (transform from) of the left code
+     */
+    public boolean isChronicTransformation(String leftCode, String rightCode) {
+        return isChronicTransformation(leftCode, rightCode, Calendar.getInstance().get(Calendar.YEAR));
+    }
+
+    /**
+     * Compares the two ICD-O-3 morphology codes and determine whether the right code is in chronic transformation (transform from) of the left code
+     * <p/>
+     * Codes should have the format "9999/9".
+     * <p/>
+     * If any of the codes is not a valid code (see isValidIcdCodeForMultiplePrimariesCalculation()), false is returned.
+     * <p/>
+     * Created on July 6, 2016 by Sewbesew Bekele
+     * @param leftCode left code to compare
+     * @param rightCode right code to compare
+     * @param year The requested DX year, cannot be null
+     * @return true if the right code is in chronic transformation (transform from) of the left code
+     */
+    public boolean isChronicTransformation(String leftCode, String rightCode, Integer year) {
+        if (year == null)
+            throw new RuntimeException("Year is required.");
+
+        //If the requested year doesn't match the data's applicable year, there can be no results
+        if (_applicableDxYear != null && !_applicableDxYear.equals(year))
+            throw new RuntimeException("The requested DX year does not match the applicable DX year.");
+
+        // get left disease
+        if (leftCode == null)
+            return false;
+        leftCode = leftCode.trim();
+        if (leftCode.isEmpty())
+            return false;
+        DiseaseDto leftDisease = null;
+        if (_diseases != null) {
+            for (DiseaseDto disease : _diseases.values()) {
+                if (leftCode.equals(disease.getCodeIcdO3())) {
+                    leftDisease = disease;
+                    break;
+                }
+            }
+        }
+        else if (_yearBasedDiseases != null) {
+            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+                if (leftCode.equals(disease.getIcdO3Morphology())) {
+                    leftDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
+                    if (leftDisease == null) {
+                        leftDisease = disease.getDiseaseDto(year);
+                        _diseasesPerYear.put(getLruId(disease.getId(), year), leftDisease);
+                    }
+                    break;
+                }
+            }
+        }
+        if (leftDisease == null)
+            return false;
+
+        // get the right disease
+        if (rightCode == null)
+            return false;
+        rightCode = rightCode.trim();
+        if (rightCode.isEmpty())
+            return false;
+        DiseaseDto rightDisease = null;
+        if (_diseases != null) {
+            for (DiseaseDto disease : _diseases.values()) {
+                if (rightCode.equals(disease.getCodeIcdO3())) {
+                    rightDisease = disease;
+                    break;
+                }
+            }
+        }
+        else if (_yearBasedDiseases != null) {
+            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+                if (rightCode.equals(disease.getIcdO3Morphology())) {
+                    rightDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
+                    if (rightDisease == null) {
+                        rightDisease = disease.getDiseaseDto(year);
+                        _diseasesPerYear.put(getLruId(disease.getId(), year), rightDisease);
+                    }
+                    break;
+                }
+            }
+        }
+        if (rightDisease == null)
+            return false;
+
+        return leftDisease.getTransformFrom().contains(rightDisease.getId());
+    }
+
+
+    /**
      * Returns the key for the LRU map
      * @param id
      * @param year

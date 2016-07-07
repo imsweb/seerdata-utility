@@ -1,5 +1,9 @@
 ## SEER Data Utility Library Version History
 
+**Changes in version 1.5.2**
+
+ - Changed the HematoDB utility class to add methods to determine if one disease is acute or chronic transformation of the other.
+
 **Changes in version 1.5.1**
 
  - Fixed a wrong mapping with XStreams that wrote some disease collections with the tag "string" instead of the actual one.
