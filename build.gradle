@@ -99,21 +99,25 @@ dependencies {
     xjc group: 'com.sun.xml.bind', name: 'jaxb-xjc', version: '2.2.7'
 }
 
-task generateHematodbXmlEntities << {
-    ant.taskdef(name: 'xjc', classname: 'com.sun.tools.xjc.XJCTask', classpath: configurations.xjc.asPath)
-    ant.xjc(destdir: 'src/main/java', schema: 'src/main/resources/diseases.xsd', package: 'com.imsweb.data.hematodb.xml', extension: 'true') {
-        arg(line: '-no-header')
+task generateHematodbXmlEntities {
+    doLast {
+        ant.taskdef(name: 'xjc', classname: 'com.sun.tools.xjc.XJCTask', classpath: configurations.xjc.asPath)
+        ant.xjc(destdir: 'src/main/java', schema: 'src/main/resources/diseases.xsd', package: 'com.imsweb.data.hematodb.xml', extension: 'true') {
+            arg(line: '-no-header')
+        }
     }
 }
 
-task generateSeerrxXmlEntities << {
-    ant.taskdef(name: 'xjc', classname: 'com.sun.tools.xjc.XJCTask', classpath: configurations.xjc.asPath)
-    ant.xjc(destdir: 'src/main/java', schema: 'src/main/resources/drugs.xsd', package: 'com.imsweb.data.seerrx.xml', extension: 'true') {
-        arg(line: '-no-header')
+task generateSeerrxXmlEntities {
+    doLast {
+        ant.taskdef(name: 'xjc', classname: 'com.sun.tools.xjc.XJCTask', classpath: configurations.xjc.asPath)
+        ant.xjc(destdir: 'src/main/java', schema: 'src/main/resources/drugs.xsd', package: 'com.imsweb.data.seerrx.xml', extension: 'true') {
+            arg(line: '-no-header')
+        }
     }
 }
 
 // Gradle wrapper, this allows to build the project without having to install Gradle!
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '3.2.1'
 }
