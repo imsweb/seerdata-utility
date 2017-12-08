@@ -1,5 +1,10 @@
 ## SEER Data Utility Library Version History
 
+**Changes in version 1.7**
+
+ - Added a proper security environment to XStream by limiting the classes that it can create when loading XML files.
+ - Updated XStream library from version 1.4.7 to 1.4.10.
+
 **Changes in version 1.6**
 
  - Changed the HematoDB utility class to add methods to determine if one disease is acute or chronic transformation of the other.

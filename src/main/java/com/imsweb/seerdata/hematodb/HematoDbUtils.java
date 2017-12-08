@@ -32,6 +32,8 @@ import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
 import com.thoughtworks.xstream.io.xml.Xpp3Driver;
+import com.thoughtworks.xstream.security.NoTypePermission;
+import com.thoughtworks.xstream.security.WildcardTypePermission;
 
 import com.imsweb.seerdata.SearchUtils;
 import com.imsweb.seerdata.SearchUtils.SearchMode;
@@ -230,6 +232,11 @@ public class HematoDbUtils {
         });
         xstream.autodetectAnnotations(true);
         xstream.alias("diseases", DiseasesDataXmlDto.class);
+
+        // setup proper security by limiting what classes can be loaded by XStream
+        xstream.addPermission(NoTypePermission.NONE);
+        xstream.addPermission(new WildcardTypePermission(new String[] {"com.imsweb.seerdata.hematodb.xml.**"}));
+
         return xstream;
     }
 
