@@ -2,6 +2,10 @@
 
 **Changes in version 1.7**
 
+ - Updated JACKSON libraries from version 2.4.4 to version 2.8.10. 
+
+**Changes in version 1.7**
+
  - Added a proper security environment to XStream by limiting the classes that it can create when loading XML files.
  - Updated XStream library from version 1.4.7 to 1.4.10.
 

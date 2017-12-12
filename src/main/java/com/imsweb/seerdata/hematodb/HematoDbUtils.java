@@ -54,7 +54,7 @@ import com.imsweb.seerdata.hematodb.xml.DiseasesDataXmlDto;
 public class HematoDbUtils {
 
     private static final DateFormat _DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-    
+
     private static final Pattern _CSV_LIST_PATTERN = Pattern.compile(",");
 
     /**
@@ -73,7 +73,7 @@ public class HematoDbUtils {
         _MAPPER.setDateFormat(_DATE_FORMAT);
 
         //This is so that the mapper will only look at the variables when reading/writing
-        _MAPPER.setVisibilityChecker(_MAPPER.getSerializationConfig().getDefaultVisibilityChecker()
+        _MAPPER.setVisibility(_MAPPER.getSerializationConfig().getDefaultVisibilityChecker()
                 .withFieldVisibility(Visibility.ANY)
                 .withGetterVisibility(Visibility.NONE)
                 .withSetterVisibility(Visibility.NONE)
@@ -522,7 +522,7 @@ public class HematoDbUtils {
 
         return score;
     }
-    
+
     private List<String> createListFromCsvString(String value) {
         if (value == null || value.isEmpty())
             return null;
@@ -838,7 +838,6 @@ public class HematoDbUtils {
 
         return leftDisease.getTransformFrom().contains(rightDisease.getId());
     }
-
 
     /**
      * Returns the key for the LRU map

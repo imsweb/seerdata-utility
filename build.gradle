@@ -20,9 +20,9 @@ repositories {
 
 dependencies {
     compile 'com.thoughtworks.xstream:xstream:1.4.10'
-    compile 'com.fasterxml.jackson.core:jackson-core:2.4.4'
-    compile 'com.fasterxml.jackson.core:jackson-annotations:2.4.4'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.4.4'
+    compile 'com.fasterxml.jackson.core:jackson-core:2.8.10'
+    compile 'com.fasterxml.jackson.core:jackson-annotations:2.8.10'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.10'
     testCompile 'junit:junit:4.12'
     testCompile 'commons-io:commons-io:2.5'
 }
