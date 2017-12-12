@@ -1,6 +1,6 @@
 ## SEER Data Utility Library Version History
 
-**Changes in version 1.7**
+**Changes in version 1.8**
 
  - Updated JACKSON libraries from version 2.4.4 to version 2.8.10. 
 
