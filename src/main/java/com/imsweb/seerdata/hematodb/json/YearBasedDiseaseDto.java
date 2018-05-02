@@ -81,6 +81,8 @@ public class YearBasedDiseaseDto {
     protected List<YearRangeString> _progression;
     @JsonProperty("mortality")
     protected List<YearRangeString> _mortality;
+    @JsonProperty("source")
+    private List<DiseaseSource> _source;
 
     /**
      * Morphology ranges
@@ -354,6 +356,14 @@ public class YearBasedDiseaseDto {
 
     public void setMortality(List<YearRangeString> mortality) {
         _mortality = mortality;
+    }
+
+    public List<DiseaseSource> getSource() {
+        return _source;
+    }
+
+    public void setSource(List<DiseaseSource> source) {
+        _source = source;
     }
 
     public YearRange getIcdO3Effective() {
