@@ -24,7 +24,9 @@ import com.thoughtworks.xstream.io.xml.Xpp3Driver;
 import com.thoughtworks.xstream.security.NoTypePermission;
 import com.thoughtworks.xstream.security.WildcardTypePermission;
 
+import com.imsweb.seerdata.JsonUtils;
 import com.imsweb.seerdata.SearchUtils;
+import com.imsweb.seerdata.seerrx.json.DrugsDataJsonDto;
 import com.imsweb.seerdata.seerrx.xml.DrugXmlDto;
 import com.imsweb.seerdata.seerrx.xml.DrugsDataXmlDto;
 import com.imsweb.seerdata.seerrx.xml.RegimenXmlDto;
@@ -168,6 +170,34 @@ public class SeerRxUtils {
         xstream.addPermission(new WildcardTypePermission(new String[] {"com.imsweb.seerdata.seerrx.xml.**"}));
 
         return xstream;
+    }
+
+    /**
+     * Reads a DrugsDataJsonDto from the given stream
+     * @param stream Stream to read data from
+     * @return The DrugsDataJsonDto with data
+     */
+    public static DrugsDataJsonDto readJsonData(InputStream stream) throws IOException {
+        try {
+            return JsonUtils.getMapper().readValue(stream, DrugsDataJsonDto.class);
+        }
+        finally {
+            stream.close();
+        }
+    }
+
+    /**
+     * Writes the given DrugsDataJsonDto to the stream
+     * @param stream Stream to write the data to
+     * @param dto Data to write
+     */
+    public static void writeJswonData(OutputStream stream, DrugsDataJsonDto dto) throws IOException {
+        try {
+            JsonUtils.getMapper().writeValue(stream, dto);
+        }
+        finally {
+            stream.close();
+        }
     }
 
     /**

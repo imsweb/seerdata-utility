@@ -1,0 +1,41 @@
+{
+  "lastUpdated": "2018-05-10T19:45:39.749Z",
+  "dataStructureVersion": "2.0",
+  "drugs": [
+    {
+      "type": "DRUG",
+      "alternate_name": [
+        "Calcijex",
+        "Calcitrol",
+        "Di-Vit-Sol",
+        "Multi-M",
+        "Rocatrol",
+        "Tolerex",
+        "Vivonex T.E.N."
+      ],
+      "remarks": "Differentiation Inducing Agent; Vitamin",
+      "category": [
+        "Differentiation inducing agent"
+      ],
+      "do_not_code": "YES",
+      "version": "latest",
+      "last_modified": "2014-09-15T18:05:40.199Z",
+      "id": "53c44af3102c1290262dbe38",
+      "first_published": "2014-09-15T18:05:40.199Z",
+      "name": "1,25-Dihydroxyvitamin D3"
+    }
+  ],
+  "regimens": [
+    {
+      "type": "REGIMEN",
+      "drugs": [
+        "53c44af3102c1290262dbe38"
+      ],
+      "version": "latest",
+      "last_modified": "2014-09-15T18:06:30.036Z",
+      "id": "53c44b1e102c1290262dd8a1",
+      "first_published": "2014-09-15T18:06:30.036Z",
+      "name": "7+3"
+    }
+  ]
+}

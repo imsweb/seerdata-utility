@@ -9,8 +9,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -20,13 +18,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.TimeZone;
 import java.util.regex.Pattern;
 
-import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
@@ -35,6 +28,7 @@ import com.thoughtworks.xstream.io.xml.Xpp3Driver;
 import com.thoughtworks.xstream.security.NoTypePermission;
 import com.thoughtworks.xstream.security.WildcardTypePermission;
 
+import com.imsweb.seerdata.JsonUtils;
 import com.imsweb.seerdata.SearchUtils;
 import com.imsweb.seerdata.SearchUtils.SearchMode;
 import com.imsweb.seerdata.hematodb.json.YearBasedDataDto;
@@ -53,32 +47,7 @@ import com.imsweb.seerdata.hematodb.xml.DiseasesDataXmlDto;
  */
 public class HematoDbUtils {
 
-    private static final DateFormat _DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
     private static final Pattern _CSV_LIST_PATTERN = Pattern.compile(",");
-
-    /**
-     * Mapper for reading and writing JSON files
-     */
-    private static final ObjectMapper _MAPPER = new ObjectMapper();
-
-    static {
-        _DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
-
-        //from seerapi-client-java
-        _MAPPER.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
-        _MAPPER.setSerializationInclusion(Include.NON_NULL);
-        // set Date objects to output in readable customized format
-        _MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        _MAPPER.setDateFormat(_DATE_FORMAT);
-
-        //This is so that the mapper will only look at the variables when reading/writing
-        _MAPPER.setVisibility(_MAPPER.getSerializationConfig().getDefaultVisibilityChecker()
-                .withFieldVisibility(Visibility.ANY)
-                .withGetterVisibility(Visibility.NONE)
-                .withSetterVisibility(Visibility.NONE)
-                .withCreatorVisibility(Visibility.NONE));
-    }
 
     /**
      * Cached instances per DX year
@@ -247,7 +216,7 @@ public class HematoDbUtils {
      * @throws IOException
      */
     public static YearBasedDataDto readYearBasedDiseaseData(InputStream stream) throws IOException {
-        YearBasedDataDto userData = _MAPPER.readValue(stream, YearBasedDataDto.class);
+        YearBasedDataDto userData = JsonUtils.getMapper().readValue(stream, YearBasedDataDto.class);
         stream.close();
         return userData;
     }
@@ -258,7 +227,7 @@ public class HematoDbUtils {
      * @param dto Data to write
      */
     public static void writeYearBasedDiseaseData(OutputStream stream, YearBasedDataDto dto) throws IOException {
-        _MAPPER.writeValue(stream, dto);
+        JsonUtils.getMapper().writeValue(stream, dto);
         stream.close();
     }
 
