@@ -13,37 +13,33 @@ import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.imsweb.seerdata.SearchUtils.SearchMode;
-import com.imsweb.seerdata.hematodb.json.YearBasedDataDto;
-import com.imsweb.seerdata.hematodb.json.YearBasedDiseaseDto;
-import com.imsweb.seerdata.hematodb.json.YearRangeString;
+import com.imsweb.seerdata.TestUtils;
 import com.imsweb.seerdata.hematodb.xml.DiseaseXmlDto;
 import com.imsweb.seerdata.hematodb.xml.DiseasesDataXmlDto;
 
-public class HematoDbUtilsTest {
+public class HematoDbUtilsXmlTest {
 
     @Test
-    public void testReadWriteXml() throws IOException {
+    public void testReadWrite() throws IOException {
         // start by reading our testing file
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("diseases-data-test-2015.xml")) {
             DiseasesDataXmlDto data = HematoDbUtils.readDiseasesData(is);
             Assert.assertNotNull(data.getLastUpdated());
             Assert.assertNotNull(data.getDataStructureVersion());
             Assert.assertEquals(3, data.getDisease().size());
-            File file = new File(System.getProperty("user.dir") + "/build/diseases-tmp.xml");
+            File file = new File(TestUtils.getWorkingDirectory() + "/build/diseases-tmp.xml");
 
             // then write it
             try (OutputStream fos = new FileOutputStream(file)) {
                 HematoDbUtils.writeDiseasesData(fos, data);
             }
-            
+
             // make sure all implicit collections are properly map
             try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)) {
                 try (StringWriter writer = new StringWriter()) {
@@ -57,36 +53,9 @@ public class HematoDbUtilsTest {
             try (InputStream is2 = new FileInputStream(file)) {
                 DiseasesDataXmlDto data2 = HematoDbUtils.readDiseasesData(is2);
                 Assert.assertNotNull(data2.getLastUpdated());
-                Assert.assertFalse(data.getDataStructureVersion().equals(data2.getLastUpdated()));
+                Assert.assertNotEquals(data.getDataStructureVersion(), data2.getLastUpdated());
                 Assert.assertNotNull(data2.getDataStructureVersion());
-                Assert.assertTrue(data.getDataStructureVersion().equals(data2.getDataStructureVersion()));
-                Assert.assertEquals(data.getDisease().size(), data2.getDisease().size());
-            }
-        }
-    }
-
-    @Test
-    public void testReadWriteJson() throws IOException {
-        // start by reading our testing file
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("diseases-data-test.json")) {
-            YearBasedDataDto data = HematoDbUtils.readYearBasedDiseaseData(is);
-            Assert.assertNotNull(data.getLastUpdated());
-            Assert.assertNotNull(data.getDataStructureVersion());
-            Assert.assertEquals(3, data.getDisease().size());
-            File file = new File(System.getProperty("user.dir") + "/build/diseases-tmp.json");
-
-            // then write it
-            try (OutputStream fos = new FileOutputStream(file)) {
-                HematoDbUtils.writeYearBasedDiseaseData(fos, data);
-            }
-
-            // and finally read it again and check the values again
-            try (InputStream is2 = new FileInputStream(file)) {
-                YearBasedDataDto data2 = HematoDbUtils.readYearBasedDiseaseData(is2);
-                Assert.assertNotNull(data2.getLastUpdated());
-                Assert.assertFalse(data.getDataStructureVersion().equals(data2.getLastUpdated()));
-                Assert.assertNotNull(data2.getDataStructureVersion());
-                Assert.assertTrue(data.getDataStructureVersion().equals(data2.getDataStructureVersion()));
+                Assert.assertEquals(data.getDataStructureVersion(), data2.getDataStructureVersion());
                 Assert.assertEquals(data.getDisease().size(), data2.getDisease().size());
             }
         }
@@ -94,36 +63,9 @@ public class HematoDbUtilsTest {
 
     @Test
     public void testInitialization() throws IOException {
-
-        // test initializing year-based diseases
-        YearBasedDataDto yearBasedData = new YearBasedDataDto();
-        yearBasedData.setLastUpdated("now");
-        yearBasedData.setDataStructureVersion("1.0");
-        YearBasedDiseaseDto yearBasedDto = new YearBasedDiseaseDto();
-        yearBasedDto.setId("123");
-        yearBasedDto.setName("Some Name");
-        yearBasedDto.setType(YearBasedDiseaseDto.Type.HEMATO);
-        yearBasedDto.setIcdO3Morphology("9000/3");
-        yearBasedDto.setAbstractorNote(Arrays.asList(new YearRangeString(null, 2009, "Note 1"), new YearRangeString(2010, 2012, "Note 2"), new YearRangeString(2013, null, "Note 3")));
-        yearBasedData.getDisease().add(yearBasedDto);
-
-        HematoDbUtils.registerInstance(yearBasedData);
-        Assert.assertTrue(HematoDbUtils.isInstanceRegistered());
-        Assert.assertFalse(HematoDbUtils.isInstanceRegistered(2010));
-        Assert.assertEquals("now", HematoDbUtils.getInstance().getDateLastUpdated());
-        Assert.assertEquals("1.0", HematoDbUtils.getInstance().getDataStructureVersion());
-        Assert.assertEquals("Note 1", HematoDbUtils.getInstance().getAllYearBasedDiseases().get("123").getAbstractorNote(2008));
-        Assert.assertEquals("Note 1", HematoDbUtils.getInstance().getAllYearBasedDiseases().get("123").getAbstractorNote(2009));
-        Assert.assertEquals("Note 2", HematoDbUtils.getInstance().getAllYearBasedDiseases().get("123").getAbstractorNote(2011));
-        Assert.assertEquals("Note 3", HematoDbUtils.getInstance().getAllYearBasedDiseases().get("123").getAbstractorNote(2013));
-        Assert.assertEquals("Note 3", HematoDbUtils.getInstance().getAllYearBasedDiseases().get("123").getAbstractorNote(2014));
-        Assert.assertEquals(YearBasedDiseaseDto.Type.HEMATO, HematoDbUtils.getInstance().getAllYearBasedDiseases().get("123").getType());
-        
-
         HematoDbUtils.unregisterInstance();
         Assert.assertFalse(HematoDbUtils.isInstanceRegistered());
-        
-        // test initializing non-year-based diseases
+
         DiseasesDataXmlDto data = new DiseasesDataXmlDto();
         data.setLastUpdated("now");
         data.setDataStructureVersion("1.0");
@@ -134,7 +76,7 @@ public class HematoDbUtilsTest {
         dto.setCodeIcdO3("9000/3");
         dto.setAbstractorNote("Notes");
         data.getDisease().add(dto);
-        
+
         HematoDbUtils.registerInstance(data);
         Assert.assertTrue(HematoDbUtils.isInstanceRegistered(2010));
         Assert.assertFalse(HematoDbUtils.isInstanceRegistered());
@@ -145,10 +87,6 @@ public class HematoDbUtilsTest {
 
         HematoDbUtils.unregisterInstance(2010);
         Assert.assertFalse(HematoDbUtils.isInstanceRegistered(2010));
-    }
-    
-    @Test
-    public void testInitializationFromXml() throws IOException {
 
         Assert.assertFalse(HematoDbUtils.isInstanceRegistered(2015));
         HematoDbUtils.registerInstance(HematoDbUtils.readDiseasesData(Thread.currentThread().getContextClassLoader().getResourceAsStream("diseases-data-test-2015.xml")));
@@ -182,53 +120,7 @@ public class HematoDbUtilsTest {
     }
 
     @Test
-    public void testInitializationFromJson() throws IOException {
-
-        Assert.assertFalse(HematoDbUtils.isInstanceRegistered());
-        HematoDbUtils.registerInstance(HematoDbUtils.readYearBasedDiseaseData(Thread.currentThread().getContextClassLoader().getResourceAsStream("diseases-data-test.json")));
-        Assert.assertTrue(HematoDbUtils.isInstanceRegistered());
-        Assert.assertFalse(HematoDbUtils.getInstance().getAllYearBasedDiseases().isEmpty());
-        Assert.assertNotNull(HematoDbUtils.getInstance().getDateLastUpdated());
-
-        // make sure same primary references are valid
-        for (YearBasedDiseaseDto disease : HematoDbUtils.getInstance().getAllYearBasedDiseases().values()) {
-            for (String s : disease.getSamePrimary(2015))
-                if (!HematoDbUtils.getInstance().getAllYearBasedDiseases().containsKey(s))
-                    Assert.fail("Disease #" + disease.getId() + " has a bad same primary reference: " + s);
-            for (String s : disease.getSamePrimary(2010))
-                if (!HematoDbUtils.getInstance().getAllYearBasedDiseases().containsKey(s))
-                    Assert.fail("Disease #" + disease.getId() + " has a bad same primary reference: " + s);
-            //The same-primaries values for 2009 should all be invalid
-            for (String s : disease.getSamePrimary(2009))
-                if (HematoDbUtils.getInstance().getAllYearBasedDiseases().containsKey(s))
-                    Assert.fail("Disease #" + disease.getId() + " has a good same primary reference: " + s);
-        }
-        
-        //Test searching- current year
-        Assert.assertFalse(HematoDbUtils.getInstance().searchDiseases("acute \"leukemia with\"", SearchMode.OR).isEmpty());
-        Assert.assertTrue(HematoDbUtils.getInstance().searchDiseases("acute \"leukemia with t\"", SearchMode.AND).isEmpty());
-        List<DiseaseSearchResultDto> results = HematoDbUtils.getInstance().searchDiseases("acute \"leukemia with\"", SearchMode.AND);
-        Assert.assertFalse(results.isEmpty());
-        Assert.assertEquals("9805/3", results.get(0).getDisease().getCodeIcdO3());
-        Assert.assertEquals(null, results.get(0).getDisease().getGrade());
-        Assert.assertEquals(0, results.get(0).getDisease().getSamePrimary().size());
-
-        //Searching results for 2009
-        results = HematoDbUtils.getInstance().searchDiseases("acute \"leukemia with\"", SearchMode.AND, 2009);
-        Assert.assertEquals((Integer)9, results.get(0).getDisease().getGrade());
-        Assert.assertEquals(0, results.get(0).getDisease().getSamePrimary().size());
-
-        //Searching results for 2001
-        results = HematoDbUtils.getInstance().searchDiseases("acute \"leukemia with\"", SearchMode.AND, 2001);
-        Assert.assertEquals((Integer)5, results.get(0).getDisease().getGrade());
-        Assert.assertEquals(1, results.get(0).getDisease().getSamePrimary().size());
-
-        HematoDbUtils.unregisterInstance();
-        Assert.assertFalse(HematoDbUtils.isInstanceRegistered());
-    }
-
-    @Test
-    public void testSearch() throws IOException {
+    public void testSearch() {
 
         DiseasesDataXmlDto data = new DiseasesDataXmlDto();
         data.setLastUpdated("2010-06-15");
@@ -292,7 +184,7 @@ public class HematoDbUtilsTest {
             Assert.assertTrue(HematoDbUtils.getInstance(2010).searchDiseases("val1 \"val2 val3\" val4 val5", SearchMode.AND, 2010).isEmpty());
             Assert.assertTrue(HematoDbUtils.getInstance(2010).searchDiseases("val1 \"val1 val5\" val4", SearchMode.AND, 2010).isEmpty());
             Assert.assertTrue(HematoDbUtils.getInstance(2010).searchDiseases("\"val4 val3 val2 val1\"", SearchMode.AND, 2010).isEmpty());
-            
+
             // test searching on ICD-O-1, which is a list of values represented by a CSV string
             Assert.assertFalse(HematoDbUtils.getInstance(2010).searchDiseases("CODE1", SearchMode.AND, 2010).isEmpty());
             Assert.assertFalse(HematoDbUtils.getInstance(2010).searchDiseases("CODE2", SearchMode.AND, 2010).isEmpty());

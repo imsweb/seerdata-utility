@@ -19,15 +19,15 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.imsweb.seerdata.SearchUtils;
-import com.imsweb.seerdata.seerrx.json.DrugsDataJsonDto;
+import com.imsweb.seerdata.TestUtils;
 import com.imsweb.seerdata.seerrx.xml.DrugXmlDto;
 import com.imsweb.seerdata.seerrx.xml.DrugsDataXmlDto;
 import com.imsweb.seerdata.seerrx.xml.RegimenXmlDto;
 
-public class SeerRxUtilsTest {
+public class SeerRxUtilsXmlTest {
 
     @Test
-    public void testReadWriteXml() throws IOException {
+    public void testReadWrite() throws IOException {
         // start by reading our testing file
         try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("drugs-data-test.xml")) {
             DrugsDataXmlDto data = SeerRxUtils.readDrugsData(is);
@@ -35,7 +35,7 @@ public class SeerRxUtilsTest {
             Assert.assertNotNull(data.getDataStructureVersion());
             Assert.assertEquals(2, data.getDrug().size());
             Assert.assertEquals(1, data.getRegimen().size());
-            File file = new File(System.getProperty("user.dir") + "/build/drugs-tmp.xml");
+            File file = new File(TestUtils.getWorkingDirectory() + "/build/drugs-tmp.xml");
 
             // then write it
             try (OutputStream fos = new FileOutputStream(file)) {
@@ -60,35 +60,6 @@ public class SeerRxUtilsTest {
                 Assert.assertEquals(data.getDataStructureVersion(), data2.getDataStructureVersion());
                 Assert.assertEquals(data.getDrug().size(), data2.getDrug().size());
                 Assert.assertEquals(data.getRegimen().size(), data2.getRegimen().size());
-            }
-        }
-    }
-
-    @Test
-    public void testReadWriteJson() throws IOException {
-        // start by reading our testing file
-        try (InputStream is = Thread.currentThread().getContextClassLoader().getResourceAsStream("drugs-data-test.json")) {
-            DrugsDataJsonDto data = SeerRxUtils.readJsonData(is);
-            Assert.assertNotNull(data.getLastUpdated());
-            Assert.assertNotNull(data.getDataStructureVersion());
-            Assert.assertEquals(1, data.getDrugs().size());
-            Assert.assertEquals(1, data.getRegimens().size());
-            File file = new File(System.getProperty("user.dir") + "/build/drugs-tmp.json");
-
-            // then write it
-            try (OutputStream fos = new FileOutputStream(file)) {
-                SeerRxUtils.writeJswonData(fos, data);
-            }
-
-            // and finally read it again and check the values again
-            try (InputStream is2 = new FileInputStream(file)) {
-                DrugsDataJsonDto data2 = SeerRxUtils.readJsonData(is2);
-                Assert.assertNotNull(data2.getLastUpdated());
-                Assert.assertNotEquals(data.getDataStructureVersion(), data2.getLastUpdated());
-                Assert.assertNotNull(data2.getDataStructureVersion());
-                Assert.assertEquals(data.getDataStructureVersion(), data2.getDataStructureVersion());
-                Assert.assertEquals(data.getDrugs().size(), data2.getDrugs().size());
-                Assert.assertEquals(data.getRegimens().size(), data2.getRegimens().size());
             }
         }
     }

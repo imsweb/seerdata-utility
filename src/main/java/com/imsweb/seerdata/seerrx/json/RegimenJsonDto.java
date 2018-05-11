@@ -5,8 +5,10 @@ package com.imsweb.seerdata.seerrx.json;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+@JsonIgnoreProperties({"type"})
 public class RegimenJsonDto {
 
     @JsonProperty("id")

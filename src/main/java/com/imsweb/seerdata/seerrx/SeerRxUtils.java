@@ -11,7 +11,6 @@ import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,9 @@ import com.thoughtworks.xstream.security.WildcardTypePermission;
 
 import com.imsweb.seerdata.JsonUtils;
 import com.imsweb.seerdata.SearchUtils;
+import com.imsweb.seerdata.seerrx.json.DrugJsonDto;
 import com.imsweb.seerdata.seerrx.json.DrugsDataJsonDto;
+import com.imsweb.seerdata.seerrx.json.RegimenJsonDto;
 import com.imsweb.seerdata.seerrx.xml.DrugXmlDto;
 import com.imsweb.seerdata.seerrx.xml.DrugsDataXmlDto;
 import com.imsweb.seerdata.seerrx.xml.RegimenXmlDto;
@@ -95,6 +96,16 @@ public class SeerRxUtils {
     }
 
     /**
+     * Registers an instance of the data.
+     * <p/>
+     * Created on May 8, 2012 by depryf
+     * @param data the data to initialize from
+     */
+    public static void registerInstance(DrugsDataJsonDto data) {
+        _INSTANCE = new SeerRxUtils(data);
+    }
+
+    /**
      * Returns true if an instance has been registered, false otherwise.
      * @return boolean
      */
@@ -117,7 +128,6 @@ public class SeerRxUtils {
      * Created on Dec 21, 2010 by depryf
      * @param stream <code>InputStream</code> to the data file, cannot be null
      * @return a <code>DrugsDataXmlDto</code>, never null
-     * @throws IOException
      */
     public static DrugsDataXmlDto readDrugsData(InputStream stream) throws IOException {
         if (stream == null)
@@ -137,7 +147,6 @@ public class SeerRxUtils {
      * Created on Dec 21, 2010 by depryf
      * @param stream <code>OutputStream</code> to the data file, cannot be null
      * @param data the <code>DrugsDataXmlDto</code> to write, cannot be null
-     * @throws IOException
      */
     public static void writeDrugsData(OutputStream stream, DrugsDataXmlDto data) throws IOException {
         if (data == null)
@@ -241,6 +250,65 @@ public class SeerRxUtils {
             regimen.setRadiation(dto.getRadiation());
             regimen.setName(dto.getName());
             regimen.setId(dto.getId());
+
+            _regimens.put(regimen.getId(), regimen);
+        }
+
+        // other properties
+        _lastUpdated = data.getLastUpdated();
+        _dataStructureVersion = data.getDataStructureVersion();
+    }
+
+    /**
+     * Constructor.
+     * <p/>
+     * Created on May 8, 2012 by depryf
+     * @param data the data to initialize from
+     */
+    SeerRxUtils(DrugsDataJsonDto data) {
+
+        // drugs
+        _drugs = new HashMap<>();
+        for (DrugJsonDto dto : data.getDrugs()) {
+            DrugDto drug = new DrugDto();
+
+            drug.setId(dto.getId());
+            drug.setName(dto.getName());
+            drug.setHistology(dto.getHistology());
+            drug.setDoNotCode(dto.getDoNotCode());
+            drug.setRemarks(dto.getRemarks());
+            if (dto.getCategory() != null)
+                drug.getCategory().addAll(dto.getCategory());
+            if (dto.getSubCategory() != null)
+                drug.getSubCategory().addAll(dto.getSubCategory());
+            if (dto.getAbbreviation() != null)
+                drug.getAbbreviation().addAll(dto.getAbbreviation());
+            if (dto.getAlternateName() != null)
+                drug.getAlternateName().addAll(dto.getAlternateName());
+            if (dto.getPrimarySite() != null)
+                drug.getPrimarySite().addAll(dto.getPrimarySite());
+            if (dto.getNscNum() != null)
+                drug.getNscNum().addAll(dto.getNscNum());
+
+            _drugs.put(drug.getId(), drug);
+        }
+
+        // regimens
+        _regimens = new HashMap<>();
+        for (RegimenJsonDto dto : data.getRegimens()) {
+            RegimenDto regimen = new RegimenDto();
+
+            regimen.setId(dto.getId());
+            regimen.setName(dto.getName());
+            regimen.setHistology(dto.getHistology());
+            regimen.setRemarks(dto.getRemarks());
+            regimen.setRadiation(dto.getRadiation());
+            if (dto.getPrimarySite() != null)
+                regimen.getPrimarySite().addAll(dto.getPrimarySite());
+            if (dto.getDrug() != null)
+                regimen.getDrug().addAll(dto.getDrug());
+            if (dto.getAlternateName() != null)
+                regimen.getAlternateName().addAll(dto.getAlternateName());
 
             _regimens.put(regimen.getId(), regimen);
         }
@@ -381,27 +449,24 @@ public class SeerRxUtils {
         }
 
         // sort the results by score
-        Collections.sort(results, new Comparator<DrugOrRegimenSearchResultDto>() {
-            @Override
-            public int compare(DrugOrRegimenSearchResultDto o1, DrugOrRegimenSearchResultDto o2) {
-                int scoreComp = o1.getScore().compareTo(o2.getScore());
-                if (scoreComp != 0)
-                    return scoreComp * -1;
+        results.sort((o1, o2) -> {
+            int scoreComp = o1.getScore().compareTo(o2.getScore());
+            if (scoreComp != 0)
+                return scoreComp * -1;
 
-                String n1;
-                if (o1.getDrug() != null)
-                    n1 = o1.getDrug().getName();
-                else
-                    n1 = o1.getRegimen().getName();
+            String n1;
+            if (o1.getDrug() != null)
+                n1 = o1.getDrug().getName();
+            else
+                n1 = o1.getRegimen().getName();
 
-                String n2;
-                if (o2.getDrug() != null)
-                    n2 = o2.getDrug().getName();
-                else
-                    n2 = o2.getRegimen().getName();
+            String n2;
+            if (o2.getDrug() != null)
+                n2 = o2.getDrug().getName();
+            else
+                n2 = o2.getRegimen().getName();
 
-                return n1.compareToIgnoreCase(n2);
-            }
+            return n1.compareToIgnoreCase(n2);
         });
 
         return results;

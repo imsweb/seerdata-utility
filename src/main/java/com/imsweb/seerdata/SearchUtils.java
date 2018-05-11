@@ -4,7 +4,6 @@
 package com.imsweb.seerdata;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,15 +15,7 @@ public class SearchUtils {
      * Possible search modes
      */
     public enum SearchMode {
-        /**
-         * <code>OR</code>
-         */
-        OR,
-
-        /**
-         * <code>AND</code>
-         */
-        AND
+        OR, AND
     }
 
     /**
@@ -43,7 +34,7 @@ public class SearchUtils {
      * @return the list of split tokens, maybe empty but never null
      */
     public static List<String> splitSearchString(String searchString) {
-        List<String> result = new ArrayList<String>();
+        List<String> result = new ArrayList<>();
 
         if (searchString == null || searchString.trim().isEmpty())
             return result;
@@ -182,7 +173,7 @@ public class SearchUtils {
      * @return a list of start and end posistions (each sub-list is of size 2); maybe empty but never null
      */
     public static List<List<Integer>> calculateHighlighting(String text, String searchString, SearchMode mode) {
-        List<List<Integer>> result = new ArrayList<List<Integer>>();
+        List<List<Integer>> result = new ArrayList<>();
 
         // make sure there is something to highlight
         if (text == null || text.isEmpty())
@@ -200,7 +191,7 @@ public class SearchUtils {
             while (start != -1) {
                 int end = start + searchText.length() - 1;
 
-                List<Integer> list = new ArrayList<Integer>(2);
+                List<Integer> list = new ArrayList<>(2);
                 list.add(start);
                 list.add(end);
                 result.add(list);
@@ -212,13 +203,8 @@ public class SearchUtils {
         if (!foundAllTerms && mode == SearchMode.AND)
             result.clear();
 
-        // sort the resluts by start position (note that there could be some overlapping between the highlighted areas)
-        Collections.sort(result, new Comparator<List<Integer>>() {
-            @Override
-            public int compare(List<Integer> l1, List<Integer> l2) {
-                return l1.get(0).compareTo(l2.get(0));
-            }
-        });
+        // sort the results by start position (note that there could be some overlapping between the highlighted areas)
+        result.sort(Comparator.comparing(l -> l.get(0)));
 
         return result;
     }
@@ -236,7 +222,7 @@ public class SearchUtils {
      * @return a list of start and end posistions (each sub-list is of size 2); maybe empty but never null
      */
     public static List<List<Integer>> calculateHighlighting(List<String> lines, String searchString, SearchMode mode) {
-        List<List<Integer>> result = new ArrayList<List<Integer>>();
+        List<List<Integer>> result = new ArrayList<>();
 
         if (lines.isEmpty())
             return result;

@@ -9,9 +9,8 @@ The library does NOT contain the actual data, only the entities to handle it. Th
 
 ## Features
 
-* Reading/writing drugs and regimens from/to XML and searching that data using a weighted algorithm.
-* Reading/writing diseases from/to XML for a given DX year and searching that data using a weighted algorithm.
-* Reading/writing year-based diseases from/to JSON and searching that data using a weighted algorithm.
+* Reading/writing drugs and regimens from/to XML/JSON and searching that data using a weighted algorithm.
+* Reading/writing diseases from/to XML/JSON and searching that data using a weighted algorithm.
 
 ## Download
 

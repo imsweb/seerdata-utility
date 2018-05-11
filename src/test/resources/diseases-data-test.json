@@ -68,6 +68,12 @@
           "start": 2010
         }
       ],
+      "transform_to": [
+        {
+          "value": "51f6cf58e3e27c3994bd53e4",
+          "start": 2010
+        }
+      ],
       "signs": [
         {
           "value": "Drenching night sweats"
@@ -277,6 +283,12 @@
         {
           "value": "51f6cf59e3e27c3994bd5435",
           "end": 2009
+        }
+      ],
+      "transform_from": [
+        {
+          "start": 2010,
+          "value": "51f6cf56e3e27c3994bd5306"
         }
       ],
       "icd_9_code": [

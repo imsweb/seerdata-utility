@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -153,7 +152,6 @@ public class HematoDbUtils {
      * Created on Dec 21, 2010 by depryf
      * @param stream <code>InputStream</code> to the data file, cannot be null
      * @return a <code>DiseasesDataXmlDto</code>, never null
-     * @throws IOException
      */
     public static DiseasesDataXmlDto readDiseasesData(InputStream stream) throws IOException {
         if (stream == null)
@@ -173,7 +171,6 @@ public class HematoDbUtils {
      * Created on Dec 21, 2010 by depryf
      * @param stream <code>OutputStream</code> to the data file, cannot be null
      * @param data the <code>DiseasesDataXmlDto</code> to write, cannot be null
-     * @throws IOException
      */
     @SuppressWarnings("ConstantConditions")
     public static void writeDiseasesData(OutputStream stream, DiseasesDataXmlDto data) throws IOException {
@@ -213,7 +210,6 @@ public class HematoDbUtils {
      * Reads a YearBasedDataDto from the given stream
      * @param stream Stream to read data from
      * @return The YearBasedDiseaseDto with data
-     * @throws IOException
      */
     public static YearBasedDataDto readYearBasedDiseaseData(InputStream stream) throws IOException {
         YearBasedDataDto userData = JsonUtils.getMapper().readValue(stream, YearBasedDataDto.class);
@@ -446,15 +442,12 @@ public class HematoDbUtils {
         }
 
         // sort the results by score
-        Collections.sort(results, new Comparator<DiseaseSearchResultDto>() {
-            @Override
-            public int compare(DiseaseSearchResultDto o1, DiseaseSearchResultDto o2) {
-                int scoreComp = o1.getScore().compareTo(o2.getScore());
-                if (scoreComp != 0)
-                    return scoreComp * -1;
+        results.sort((o1, o2) -> {
+            int scoreComp = o1.getScore().compareTo(o2.getScore());
+            if (scoreComp != 0)
+                return scoreComp * -1;
 
-                return o1.getDisease().getName().compareToIgnoreCase(o2.getDisease().getName());
-            }
+            return o1.getDisease().getName().compareToIgnoreCase(o2.getDisease().getName());
         });
 
         return results;
@@ -810,9 +803,6 @@ public class HematoDbUtils {
 
     /**
      * Returns the key for the LRU map
-     * @param id
-     * @param year
-     * @return
      */
     private String getLruId(String id, Integer year) {
         return id + "#" + year;
