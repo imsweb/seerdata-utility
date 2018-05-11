@@ -1,5 +1,9 @@
 ## SEER Data Utility Library Version History
 
+**Changes in version 1.11**
+
+- Forgot a JSON annotation in the regimen DTO!
+
 **Changes in version 1.10**
 
 - Added support for reading and writing drugs in JSON.
