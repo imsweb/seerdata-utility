@@ -32,6 +32,7 @@ public class RegimenJsonDto {
     @JsonProperty("radiation")
     private String _radiation;
 
+    @JsonProperty("remarks")
     private String _remarks;
 
     @JsonProperty("alternate_name")
