@@ -43,12 +43,10 @@ public class HematoDbUtils {
     /**
      * Data for this instance
      */
-    protected Map<String, YearBasedDiseaseDto> _yearBasedDiseases;
-    protected Map<String, DiseaseDto> _diseases;
-    protected Map<String, DiseaseDto> _diseasesPerYear;
+    protected Map<String, YearBasedDiseaseDto> _yearBasedDiseases; // diseases keyed by disease ID
+    protected Map<String, DiseaseDto> _diseasesPerYear; // LRU cache for a view of a given disease for a specific year
     protected String _lastUpdated;
     protected String _dataStructureVersion;
-    protected Integer _applicableDxYear;
 
     /**
      * Returns the instance of the utility class corresponding to the default version.
@@ -177,24 +175,6 @@ public class HematoDbUtils {
     }
 
     /**
-     * Returns  the application DX year for this instance of the data.
-     * @return application year, can be null
-     */
-    public Integer getApplicableDxYear() {
-        return _applicableDxYear;
-    }
-
-    /**
-     * Returns all the diseases (keys are the disease internal identifiers, values are the diseases).
-     * <p/>
-     * Created on Nov 30, 2010 by depryf
-     * @return a map of <code>String</code> : <code>DiseaseDto</code>
-     */
-    public Map<String, DiseaseDto> getAllDiseases() {
-        return Collections.unmodifiableMap(_diseases);
-    }
-
-    /**
      * @return Map of YearBasedDiseaseDtos, with the ids as keys
      */
     public Map<String, YearBasedDiseaseDto> getAllYearBasedDiseases() {
@@ -266,10 +246,6 @@ public class HematoDbUtils {
     public List<DiseaseSearchResultDto> searchDiseases(String queryString, SearchMode searchMode, Integer year) {
         List<DiseaseSearchResultDto> results = new ArrayList<>();
 
-        //If the requested year doesn't match the data's applicable year, there can be no results
-        if (_applicableDxYear != null && !_applicableDxYear.equals(year))
-            throw new RuntimeException("The requested DX year does not match the applicable DX year.");
-
         // if the search string is empty or null then return the empty results list
         if (queryString == null || queryString.trim().isEmpty() || year == null)
             return results;
@@ -278,24 +254,15 @@ public class HematoDbUtils {
         List<String> searchTexts = SearchUtils.splitSearchString(queryString);
 
         // calculate the weights
-        if (_diseases != null) {
-            for (DiseaseDto dto : _diseases.values()) {
-                int score = weightDisease(dto, searchTexts, searchMode);
-                if (score > 0)
-                    results.add(new DiseaseSearchResultDto(score, dto));
+        for (YearBasedDiseaseDto dto : _yearBasedDiseases.values()) {
+            DiseaseDto data = _diseasesPerYear.get(getLruId(dto.getId(), year));
+            if (data == null) {
+                data = dto.getDiseaseDto(year);
+                _diseasesPerYear.put(getLruId(dto.getId(), year), data);
             }
-        }
-        else if (_yearBasedDiseases != null) {
-            for (YearBasedDiseaseDto dto : _yearBasedDiseases.values()) {
-                DiseaseDto data = _diseasesPerYear.get(getLruId(dto.getId(), year));
-                if (data == null) {
-                    data = dto.getDiseaseDto(year);
-                    _diseasesPerYear.put(getLruId(dto.getId(), year), data);
-                }
-                int score = weightDisease(data, searchTexts, searchMode);
-                if (score > 0)
-                    results.add(new DiseaseSearchResultDto(score, data));
-            }
+            int score = weightDisease(data, searchTexts, searchMode);
+            if (score > 0)
+                results.add(new DiseaseSearchResultDto(score, data));
         }
 
         // sort the results by score
@@ -360,16 +327,9 @@ public class HematoDbUtils {
         if (code == null)
             return false;
 
-        if (_diseases != null) {
-            for (DiseaseDto disease : _diseases.values())
-                if (code.equals(disease.getCodeIcdO3()))
-                    return true;
-        }
-        else if (_yearBasedDiseases != null) {
-            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values())
-                if (code.equals(disease.getIcdO3Morphology()))
-                    return true;
-        }
+        for (YearBasedDiseaseDto disease : _yearBasedDiseases.values())
+            if (code.equals(disease.getIcdO3Morphology()))
+                return true;
 
         return false;
     }
@@ -377,8 +337,10 @@ public class HematoDbUtils {
     /**
      * @param leftCode Left code to compare
      * @param rightCode Right code to compare
-     * @return Returns true if the codes are cultiple primaries
+     * @return Returns true if the codes are multiple primaries using the current year
+     * @deprecated Use {@code isMultiplePrimaries(String leftCode, String rightCode, Integer leftYear, Integer rightYear)}
      */
+    @Deprecated
     public boolean isMultiplePrimaries(String leftCode, String rightCode) {
         return isMultiplePrimaries(leftCode, rightCode, Calendar.getInstance().get(Calendar.YEAR));
     }
@@ -395,16 +357,36 @@ public class HematoDbUtils {
      * Created on Dec 22, 2010 by depryf
      * @param leftCode left code to compare
      * @param rightCode right code to compare
-     * @param year The requested DX year, cannot be null
+     * @param year The requested DX year, cannot be null; the year is used for both codes
+     * @return true if the code are multiple primaries, false otherwise
+     * @deprecated Use {@code isMultiplePrimaries(String leftCode, String rightCode, Integer leftYear, Integer rightYear)}
+     */
+    @Deprecated
+    public boolean isMultiplePrimaries(String leftCode, String rightCode, Integer year) {
+        return isMultiplePrimaries(leftCode, rightCode, year, year);
+    }
+
+    /**
+     * Compares the two ICD-O-3 morphology codes and determine whether they are multiple primaries or not.
+     * <p/>
+     * Codes should have the format "9999/9".
+     * <p/>
+     * If any of the codes is not a valid code (see isValidIcdCodeForMultiplePrimariesCalculation()), true is returned (different primaries).
+     * <p/>
+     * If both codes are the same, false is returned (same primaries).
+     * <p/>
+     * Created on Dec 22, 2010 by depryf
+     * @param leftCode left code to compare
+     * @param rightCode right code to compare
+     * @param leftYear The left DX year, cannot be null
+     * @param rightYear The right DX year, cannot be null
      * @return true if the code are multiple primaries, false otherwise
      */
-    public boolean isMultiplePrimaries(String leftCode, String rightCode, Integer year) {
-        if (year == null)
-            throw new RuntimeException("Year is required.");
-
-        //If the requested year doesn't match the data's applicable year, there can be no results
-        if (_applicableDxYear != null && !_applicableDxYear.equals(year))
-            throw new RuntimeException("The requested DX year does not match the applicable DX year.");
+    public boolean isMultiplePrimaries(String leftCode, String rightCode, Integer leftYear, Integer rightYear) {
+        if (leftYear == null)
+            throw new RuntimeException("Left year is required.");
+        if (rightYear == null)
+            throw new RuntimeException("Right year is required.");
 
         // get left disease
         if (leftCode == null)
@@ -413,24 +395,14 @@ public class HematoDbUtils {
         if (leftCode.isEmpty())
             return true;
         DiseaseDto leftDisease = null;
-        if (_diseases != null) {
-            for (DiseaseDto disease : _diseases.values()) {
-                if (leftCode.equals(disease.getCodeIcdO3())) {
-                    leftDisease = disease;
-                    break;
+        for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+            if (leftCode.equals(disease.getIcdO3Morphology())) {
+                leftDisease = _diseasesPerYear.get(getLruId(disease.getId(), leftYear));
+                if (leftDisease == null) {
+                    leftDisease = disease.getDiseaseDto(leftYear);
+                    _diseasesPerYear.put(getLruId(disease.getId(), leftYear), leftDisease);
                 }
-            }
-        }
-        else if (_yearBasedDiseases != null) {
-            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
-                if (leftCode.equals(disease.getIcdO3Morphology())) {
-                    leftDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
-                    if (leftDisease == null) {
-                        leftDisease = disease.getDiseaseDto(year);
-                        _diseasesPerYear.put(getLruId(disease.getId(), year), leftDisease);
-                    }
-                    break;
-                }
+                break;
             }
         }
         if (leftDisease == null)
@@ -443,24 +415,14 @@ public class HematoDbUtils {
         if (rightCode.isEmpty())
             return true;
         DiseaseDto rightDisease = null;
-        if (_diseases != null) {
-            for (DiseaseDto disease : _diseases.values()) {
-                if (rightCode.equals(disease.getCodeIcdO3())) {
-                    rightDisease = disease;
-                    break;
+        for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+            if (rightCode.equals(disease.getIcdO3Morphology())) {
+                rightDisease = _diseasesPerYear.get(getLruId(disease.getId(), rightYear));
+                if (rightDisease == null) {
+                    rightDisease = disease.getDiseaseDto(rightYear);
+                    _diseasesPerYear.put(getLruId(disease.getId(), rightYear), rightDisease);
                 }
-            }
-        }
-        else if (_yearBasedDiseases != null) {
-            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
-                if (rightCode.equals(disease.getIcdO3Morphology())) {
-                    rightDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
-                    if (rightDisease == null) {
-                        rightDisease = disease.getDiseaseDto(year);
-                        _diseasesPerYear.put(getLruId(disease.getId(), year), rightDisease);
-                    }
-                    break;
-                }
+                break;
             }
         }
         if (rightDisease == null)
@@ -475,8 +437,10 @@ public class HematoDbUtils {
     /**
      * @param leftCode Left code to compare
      * @param rightCode Right code to compare
-     * @return Returns true if the right code is in acute transformation (transform to) of the left code
+     * @return Returns true if the right code is in acute transformation (transform to) of the left code; uses the current year
+     * @deprecated Use {@code isAcuteTransformation(String leftCode, String rightCode, Integer leftYear, Integer rightYear)}
      */
+    @Deprecated
     public boolean isAcuteTransformation(String leftCode, String rightCode) {
         return isAcuteTransformation(leftCode, rightCode, Calendar.getInstance().get(Calendar.YEAR));
     }
@@ -493,14 +457,32 @@ public class HematoDbUtils {
      * @param rightCode right code to compare
      * @param year The requested DX year, cannot be null
      * @return true if the right code is in acute transformation (transform to) of the left code
+     * @deprecated Use {@code isAcuteTransformation(String leftCode, String rightCode, Integer leftYear, Integer rightYear)}
      */
+    @Deprecated
     public boolean isAcuteTransformation(String leftCode, String rightCode, Integer year) {
-        if (year == null)
-            throw new RuntimeException("Year is required.");
+        return isAcuteTransformation(leftCode, rightCode, year, year);
+    }
 
-        //If the requested year doesn't match the data's applicable year, there can be no results
-        if (_applicableDxYear != null && !_applicableDxYear.equals(year))
-            throw new RuntimeException("The requested DX year does not match the applicable DX year.");
+    /**
+     * Compares the two ICD-O-3 morphology codes and determine whether the right code is in acute transformation (transform to) of the left code
+     * <p/>
+     * Codes should have the format "9999/9".
+     * <p/>
+     * If any of the codes is not a valid code (see isValidIcdCodeForMultiplePrimariesCalculation()), false is returned.
+     * <p/>
+     * Created on July 6, 2016 by Sewbesew Bekele
+     * @param leftCode left code to compare
+     * @param rightCode right code to compare
+     * @param leftYear The left DX year, cannot be null
+     * @param rightYear The right DX year, cannot be null
+     * @return true if the right code is in acute transformation (transform to) of the left code
+     */
+    public boolean isAcuteTransformation(String leftCode, String rightCode, Integer leftYear, Integer rightYear) {
+        if (leftYear == null)
+            throw new RuntimeException("Left year is required.");
+        if (rightYear == null)
+            throw new RuntimeException("Right year is required.");
 
         // get left disease
         if (leftCode == null)
@@ -509,24 +491,14 @@ public class HematoDbUtils {
         if (leftCode.isEmpty())
             return false;
         DiseaseDto leftDisease = null;
-        if (_diseases != null) {
-            for (DiseaseDto disease : _diseases.values()) {
-                if (leftCode.equals(disease.getCodeIcdO3())) {
-                    leftDisease = disease;
-                    break;
+        for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+            if (leftCode.equals(disease.getIcdO3Morphology())) {
+                leftDisease = _diseasesPerYear.get(getLruId(disease.getId(), leftYear));
+                if (leftDisease == null) {
+                    leftDisease = disease.getDiseaseDto(leftYear);
+                    _diseasesPerYear.put(getLruId(disease.getId(), leftYear), leftDisease);
                 }
-            }
-        }
-        else if (_yearBasedDiseases != null) {
-            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
-                if (leftCode.equals(disease.getIcdO3Morphology())) {
-                    leftDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
-                    if (leftDisease == null) {
-                        leftDisease = disease.getDiseaseDto(year);
-                        _diseasesPerYear.put(getLruId(disease.getId(), year), leftDisease);
-                    }
-                    break;
-                }
+                break;
             }
         }
         if (leftDisease == null)
@@ -539,24 +511,14 @@ public class HematoDbUtils {
         if (rightCode.isEmpty())
             return false;
         DiseaseDto rightDisease = null;
-        if (_diseases != null) {
-            for (DiseaseDto disease : _diseases.values()) {
-                if (rightCode.equals(disease.getCodeIcdO3())) {
-                    rightDisease = disease;
-                    break;
+        for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+            if (rightCode.equals(disease.getIcdO3Morphology())) {
+                rightDisease = _diseasesPerYear.get(getLruId(disease.getId(), rightYear));
+                if (rightDisease == null) {
+                    rightDisease = disease.getDiseaseDto(rightYear);
+                    _diseasesPerYear.put(getLruId(disease.getId(), rightYear), rightDisease);
                 }
-            }
-        }
-        else if (_yearBasedDiseases != null) {
-            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
-                if (rightCode.equals(disease.getIcdO3Morphology())) {
-                    rightDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
-                    if (rightDisease == null) {
-                        rightDisease = disease.getDiseaseDto(year);
-                        _diseasesPerYear.put(getLruId(disease.getId(), year), rightDisease);
-                    }
-                    break;
-                }
+                break;
             }
         }
         if (rightDisease == null)
@@ -568,8 +530,10 @@ public class HematoDbUtils {
     /**
      * @param leftCode Left code to compare
      * @param rightCode Right code to compare
-     * @return Returns true if the right code is in chronic transformation (transform from) of the left code
+     * @return Returns true if the right code is in chronic transformation (transform from) of the left code; uses current year
+     * @deprecated Use {@code isChronicTransformation(String leftCode, String rightCode, Integer leftYear, Integer rightYear)}
      */
+    @Deprecated
     public boolean isChronicTransformation(String leftCode, String rightCode) {
         return isChronicTransformation(leftCode, rightCode, Calendar.getInstance().get(Calendar.YEAR));
     }
@@ -586,14 +550,32 @@ public class HematoDbUtils {
      * @param rightCode right code to compare
      * @param year The requested DX year, cannot be null
      * @return true if the right code is in chronic transformation (transform from) of the left code
+     * @deprecated Use {@code isChronicTransformation(String leftCode, String rightCode, Integer leftYear, Integer rightYear)}
      */
+    @Deprecated
     public boolean isChronicTransformation(String leftCode, String rightCode, Integer year) {
-        if (year == null)
-            throw new RuntimeException("Year is required.");
+        return isChronicTransformation(leftCode, rightCode, year, year);
+    }
 
-        //If the requested year doesn't match the data's applicable year, there can be no results
-        if (_applicableDxYear != null && !_applicableDxYear.equals(year))
-            throw new RuntimeException("The requested DX year does not match the applicable DX year.");
+    /**
+     * Compares the two ICD-O-3 morphology codes and determine whether the right code is in chronic transformation (transform from) of the left code
+     * <p/>
+     * Codes should have the format "9999/9".
+     * <p/>
+     * If any of the codes is not a valid code (see isValidIcdCodeForMultiplePrimariesCalculation()), false is returned.
+     * <p/>
+     * Created on July 6, 2016 by Sewbesew Bekele
+     * @param leftCode left code to compare
+     * @param rightCode right code to compare
+     * @param leftYear The left DX year, cannot be null
+     * @param rightYear The right DX year, cannot be null
+     * @return true if the right code is in chronic transformation (transform from) of the left code
+     */
+    public boolean isChronicTransformation(String leftCode, String rightCode, Integer leftYear, Integer rightYear) {
+        if (leftYear == null)
+            throw new RuntimeException("Left year is required.");
+        if (rightYear == null)
+            throw new RuntimeException("Right year is required.");
 
         // get left disease
         if (leftCode == null)
@@ -602,24 +584,14 @@ public class HematoDbUtils {
         if (leftCode.isEmpty())
             return false;
         DiseaseDto leftDisease = null;
-        if (_diseases != null) {
-            for (DiseaseDto disease : _diseases.values()) {
-                if (leftCode.equals(disease.getCodeIcdO3())) {
-                    leftDisease = disease;
-                    break;
+        for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+            if (leftCode.equals(disease.getIcdO3Morphology())) {
+                leftDisease = _diseasesPerYear.get(getLruId(disease.getId(), leftYear));
+                if (leftDisease == null) {
+                    leftDisease = disease.getDiseaseDto(leftYear);
+                    _diseasesPerYear.put(getLruId(disease.getId(), leftYear), leftDisease);
                 }
-            }
-        }
-        else if (_yearBasedDiseases != null) {
-            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
-                if (leftCode.equals(disease.getIcdO3Morphology())) {
-                    leftDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
-                    if (leftDisease == null) {
-                        leftDisease = disease.getDiseaseDto(year);
-                        _diseasesPerYear.put(getLruId(disease.getId(), year), leftDisease);
-                    }
-                    break;
-                }
+                break;
             }
         }
         if (leftDisease == null)
@@ -632,24 +604,14 @@ public class HematoDbUtils {
         if (rightCode.isEmpty())
             return false;
         DiseaseDto rightDisease = null;
-        if (_diseases != null) {
-            for (DiseaseDto disease : _diseases.values()) {
-                if (rightCode.equals(disease.getCodeIcdO3())) {
-                    rightDisease = disease;
-                    break;
+        for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
+            if (rightCode.equals(disease.getIcdO3Morphology())) {
+                rightDisease = _diseasesPerYear.get(getLruId(disease.getId(), rightYear));
+                if (rightDisease == null) {
+                    rightDisease = disease.getDiseaseDto(rightYear);
+                    _diseasesPerYear.put(getLruId(disease.getId(), rightYear), rightDisease);
                 }
-            }
-        }
-        else if (_yearBasedDiseases != null) {
-            for (YearBasedDiseaseDto disease : _yearBasedDiseases.values()) {
-                if (rightCode.equals(disease.getIcdO3Morphology())) {
-                    rightDisease = _diseasesPerYear.get(getLruId(disease.getId(), year));
-                    if (rightDisease == null) {
-                        rightDisease = disease.getDiseaseDto(year);
-                        _diseasesPerYear.put(getLruId(disease.getId(), year), rightDisease);
-                    }
-                    break;
-                }
+                break;
             }
         }
         if (rightDisease == null)

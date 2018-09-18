@@ -60,6 +60,7 @@ public class HematoDbUtilsJsonTest {
         Assert.assertTrue(HematoDbUtils.isInstanceRegistered());
         Assert.assertFalse(HematoDbUtils.getInstance().getAllYearBasedDiseases().isEmpty());
         Assert.assertNotNull(HematoDbUtils.getInstance().getDateLastUpdated());
+        Assert.assertNotNull(HematoDbUtils.getInstance().getDataStructureVersion());
 
         // make sure same primary references are valid
         for (YearBasedDiseaseDto disease : HematoDbUtils.getInstance().getAllYearBasedDiseases().values()) {
@@ -200,18 +201,18 @@ public class HematoDbUtilsJsonTest {
             Assert.assertFalse(HematoDbUtils.getInstance().isValidIcdCodeForMultiplePrimariesCalculation(null));
 
             // multiple-primaries - codes that ARE same primaries
-            Assert.assertFalse(HematoDbUtils.getInstance().isMultiplePrimaries("9737/3", "9870/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isMultiplePrimaries("9737/3", "9870/3", 2015, 2015));
             // multiple-primaries - codes that ARE NOT same primaries
-            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("9870/3", "9805/3", 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("9870/3", "9805/3", 2015, 2015));
             // multiple-primaries - code that exsit against a null value code, vice versa
-            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("9870/3", null, 2015));
-            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries(null, "9870/3", 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("9870/3", null, 2015, 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries(null, "9870/3", 2015, 2015));
             // multiple-primaries - code that exists against an empty value code, vice versa
-            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("9870/3", "", 2015));
-            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("", "9870/3", 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("9870/3", "", 2015, 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("", "9870/3", 2015, 2015));
             // multiple-primaries - null and empty value codes
-            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries(null, null, 2015));
-            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("", "", 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries(null, null, 2015, 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().isMultiplePrimaries("", "", 2015, 2015));
         }
         finally {
             HematoDbUtils.unregisterInstance();
@@ -224,19 +225,19 @@ public class HematoDbUtilsJsonTest {
         try {
 
             // Invalid codes
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation(null, null, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", null, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation(null, "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("  ", "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("8000/3", "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", "9737/03", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation(null, null, 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", null, 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation(null, "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("  ", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("8000/3", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", "9737/03", 2015, 2015));
 
-            Assert.assertTrue(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", "9870/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9870/3", "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9870/3", "9805/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9805/3", "9870/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9805/3", "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", "9805/3", 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", "9870/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9870/3", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9870/3", "9805/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9805/3", "9870/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9805/3", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", "9805/3", 2015, 2015));
         }
         finally {
             HematoDbUtils.unregisterInstance();
@@ -249,19 +250,19 @@ public class HematoDbUtilsJsonTest {
         try {
 
             // Invalid codes
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation(null, null, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9737/3", null, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation(null, "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("  ", "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("8000/3", "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9870/03", "9737/3", 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation(null, null, 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9737/3", null, 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation(null, "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("  ", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("8000/3", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9870/03", "9737/3", 2015, 2015));
 
-            Assert.assertTrue(HematoDbUtils.getInstance().isChronicTransformation("9870/3", "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9737/3", "9870/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9870/3", "9805/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9805/3", "9870/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9805/3", "9737/3", 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9737/3", "9805/3", 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().isChronicTransformation("9870/3", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9737/3", "9870/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9870/3", "9805/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9805/3", "9870/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9805/3", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9737/3", "9805/3", 2015, 2015));
         }
         finally {
             HematoDbUtils.unregisterInstance();
