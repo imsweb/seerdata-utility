@@ -6,9 +6,6 @@ package com.imsweb.seerdata.hematodb;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -19,21 +16,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
-import com.thoughtworks.xstream.io.xml.Xpp3Driver;
-import com.thoughtworks.xstream.security.NoTypePermission;
-import com.thoughtworks.xstream.security.WildcardTypePermission;
-
 import com.imsweb.seerdata.JsonUtils;
 import com.imsweb.seerdata.SearchUtils;
 import com.imsweb.seerdata.SearchUtils.SearchMode;
 import com.imsweb.seerdata.hematodb.json.YearBasedDataDto;
 import com.imsweb.seerdata.hematodb.json.YearBasedDiseaseDto;
-import com.imsweb.seerdata.hematodb.xml.DiseaseXmlDto;
-import com.imsweb.seerdata.hematodb.xml.DiseasesDataXmlDto;
 
 /**
  * Use an instance of this class to access the utility methods on the HematoDB data.
@@ -90,15 +77,6 @@ public class HematoDbUtils {
     }
 
     /**
-     * Registers an instance of the data.
-     * Created on Nov 27, 2013 by depryf
-     * @param data data to register
-     */
-    public static void registerInstance(DiseasesDataXmlDto data) {
-        _INSTANCES.put(data.getApplicableDxYear(), new HematoDbUtils(data));
-    }
-
-    /**
      * Registers an instance of the data
      * @param data data to register
      */
@@ -145,68 +123,6 @@ public class HematoDbUtils {
     }
 
     /**
-     * Reads the HematoDB diseases data from the provided URL, expects XML format.
-     * <p/>
-     * The provided stream will be closed when this method returns
-     * <p/>
-     * Created on Dec 21, 2010 by depryf
-     * @param stream <code>InputStream</code> to the data file, cannot be null
-     * @return a <code>DiseasesDataXmlDto</code>, never null
-     */
-    public static DiseasesDataXmlDto readDiseasesData(InputStream stream) throws IOException {
-        if (stream == null)
-            throw new IOException("Unable to read diseases, target input stream is null");
-
-        try (InputStream is = stream) {
-            return (DiseasesDataXmlDto)createDiseasesXStream().fromXML(is);
-        }
-        catch (RuntimeException e) {
-            throw new IOException("Unable to read diseases", e);
-        }
-    }
-
-    /**
-     * Writes the HematoDB diseases data to the provided URL, using XML format.
-     * <p/>
-     * Created on Dec 21, 2010 by depryf
-     * @param stream <code>OutputStream</code> to the data file, cannot be null
-     * @param data the <code>DiseasesDataXmlDto</code> to write, cannot be null
-     */
-    @SuppressWarnings("ConstantConditions")
-    public static void writeDiseasesData(OutputStream stream, DiseasesDataXmlDto data) throws IOException {
-        if (data == null)
-            throw new IOException("Unable to write NULL diseases");
-        if (stream == null)
-            throw new IOException("Unable to write diseases, target output stream is null");
-
-        try (Writer writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
-            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            writer.write(System.lineSeparator());
-            createDiseasesXStream().toXML(data, writer);
-        }
-        catch (RuntimeException e) {
-            throw new IOException("Unable to write diseases", e);
-        }
-    }
-
-    private static XStream createDiseasesXStream() {
-        XStream xstream = new XStream(new PureJavaReflectionProvider(), new Xpp3Driver() {
-            @Override
-            public HierarchicalStreamWriter createWriter(Writer out) {
-                return new PrettyPrintWriter(out, "    ");
-            }
-        });
-        xstream.autodetectAnnotations(true);
-        xstream.alias("diseases", DiseasesDataXmlDto.class);
-
-        // setup proper security by limiting what classes can be loaded by XStream
-        xstream.addPermission(NoTypePermission.NONE);
-        xstream.addPermission(new WildcardTypePermission(new String[] {"com.imsweb.seerdata.hematodb.xml.**"}));
-
-        return xstream;
-    }
-
-    /**
      * Reads a YearBasedDataDto from the given stream
      * @param stream Stream to read data from
      * @return The YearBasedDiseaseDto with data
@@ -240,65 +156,6 @@ public class HematoDbUtils {
         _lastUpdated = data.getLastUpdated();
 
         _diseasesPerYear = new LRUMap<>(500);
-    }
-
-    /**
-     * Constructor.
-     * <p/>
-     * Created on Nov 27, 2013 by depryf
-     * @param data data data to initialize from
-     */
-    HematoDbUtils(DiseasesDataXmlDto data) {
-
-        // diseases
-        _diseases = new HashMap<>();
-        for (DiseaseXmlDto dto : data.getDisease()) {
-            DiseaseDto disease = new DiseaseDto();
-
-            disease.getMortality().addAll(dto.getMortality());
-            disease.getProgression().addAll(dto.getProgression());
-            disease.getExam().addAll(dto.getExam());
-            disease.getSign().addAll(dto.getSign());
-            disease.getObsoleteNew().addAll(dto.getObsoleteNew());
-            disease.setPrimarySite(dto.getPrimarySite());
-            disease.setMissingPrimarySiteMessage(dto.getMissingPrimarySiteMessage());
-            disease.setPrimarySiteText(dto.getPrimarySiteText());
-            disease.setModuleId(dto.getModuleId());
-            disease.setDefinition(dto.getDefinition());
-            disease.getAlternateName().addAll(dto.getAlternateName());
-            disease.getGenetics().addAll(dto.getGenetics());
-            disease.getImmunophenotype().addAll(dto.getImmunophenotype());
-            disease.getTransformFrom().addAll(dto.getTransformFrom());
-            disease.setTransformFromText(dto.getTransformFromText());
-            disease.getTransformTo().addAll(dto.getTransformTo());
-            disease.setTransformToText(dto.getTransformToText());
-            disease.getTreatment().addAll(dto.getTreatment());
-            disease.getDiagnosisMethod().addAll(dto.getDiagnosisMethod());
-            disease.setAbstractorNote(dto.getAbstractorNote());
-            disease.getSamePrimary().addAll(dto.getSamePrimary());
-            disease.setSamePrimaryText(dto.getSamePrimaryText());
-            disease.getIcd9Code().addAll(dto.getIcd9Code());
-            disease.getIcd10Code().addAll(dto.getIcd10Code());
-            disease.getIcd10CmCode().addAll(dto.getIcd10CmCode());
-            disease.setGrade(dto.getGrade());
-            disease.setObsolete(dto.getObsolete());
-            disease.setReportable(dto.getReportable());
-            disease.setCodeIcdO1Effective(dto.getCodeIcdO1Effective());
-            disease.setCodeIcdO2Effective(dto.getCodeIcdO2Effective());
-            disease.setCodeIcdO3Effective(dto.getCodeIcdO3Effective());
-            disease.setCodeIcdO1(dto.getCodeIcdO1());
-            disease.setCodeIcdO2(dto.getCodeIcdO2());
-            disease.setCodeIcdO3(dto.getCodeIcdO3());
-            disease.setName(dto.getName());
-            disease.setId(dto.getId());
-
-            _diseases.put(disease.getId(), disease);
-        }
-
-        // other properties
-        _lastUpdated = data.getLastUpdated();
-        _dataStructureVersion = data.getDataStructureVersion();
-        _applicableDxYear = data.getApplicableDxYear();
     }
 
     /**

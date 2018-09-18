@@ -1,5 +1,9 @@
 ## SEER Data Utility Library Version History
 
+**Changes in version 1.12**
+
+- Removed support for reading/writing XML, JSON is the only format supported now.
+
 **Changes in version 1.11**
 
 - Forgot a JSON annotation in the regimen DTO!

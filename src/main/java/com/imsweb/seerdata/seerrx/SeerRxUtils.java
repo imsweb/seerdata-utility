@@ -6,31 +6,17 @@ package com.imsweb.seerdata.seerrx;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.converters.reflection.PureJavaReflectionProvider;
-import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
-import com.thoughtworks.xstream.io.xml.PrettyPrintWriter;
-import com.thoughtworks.xstream.io.xml.Xpp3Driver;
-import com.thoughtworks.xstream.security.NoTypePermission;
-import com.thoughtworks.xstream.security.WildcardTypePermission;
-
 import com.imsweb.seerdata.JsonUtils;
 import com.imsweb.seerdata.SearchUtils;
 import com.imsweb.seerdata.seerrx.json.DrugJsonDto;
 import com.imsweb.seerdata.seerrx.json.DrugsDataJsonDto;
 import com.imsweb.seerdata.seerrx.json.RegimenJsonDto;
-import com.imsweb.seerdata.seerrx.xml.DrugXmlDto;
-import com.imsweb.seerdata.seerrx.xml.DrugsDataXmlDto;
-import com.imsweb.seerdata.seerrx.xml.RegimenXmlDto;
 
 /**
  * Use an instance of this class to access the utility methods on the SEER*Rx data.
@@ -91,16 +77,6 @@ public class SeerRxUtils {
      * Created on May 8, 2012 by depryf
      * @param data the data to initialize from
      */
-    public static void registerInstance(DrugsDataXmlDto data) {
-        _INSTANCE = new SeerRxUtils(data);
-    }
-
-    /**
-     * Registers an instance of the data.
-     * <p/>
-     * Created on May 8, 2012 by depryf
-     * @param data the data to initialize from
-     */
     public static void registerInstance(DrugsDataJsonDto data) {
         _INSTANCE = new SeerRxUtils(data);
     }
@@ -118,67 +94,6 @@ public class SeerRxUtils {
      */
     public static void unregisterInstance() {
         _INSTANCE = null;
-    }
-
-    /**
-     * Reads the drugs and regimens data from the provided URL, expects XML format.
-     * <p/>
-     * The provided stream will be closed when this method returns
-     * <p/>
-     * Created on Dec 21, 2010 by depryf
-     * @param stream <code>InputStream</code> to the data file, cannot be null
-     * @return a <code>DrugsDataXmlDto</code>, never null
-     */
-    public static DrugsDataXmlDto readDrugsData(InputStream stream) throws IOException {
-        if (stream == null)
-            throw new IOException("Unable to read drugs, target input stream is null");
-
-        try (InputStream is = stream) {
-            return (DrugsDataXmlDto)createDrugsXStream().fromXML(is);
-        }
-        catch (RuntimeException e) {
-            throw new IOException("Unable to read drugs", e);
-        }
-    }
-
-    /**
-     * Writes the drugs and regimens data to the provided URL, using XML format.
-     * <p/>
-     * Created on Dec 21, 2010 by depryf
-     * @param stream <code>OutputStream</code> to the data file, cannot be null
-     * @param data the <code>DrugsDataXmlDto</code> to write, cannot be null
-     */
-    public static void writeDrugsData(OutputStream stream, DrugsDataXmlDto data) throws IOException {
-        if (data == null)
-            throw new IOException("Unable to write NULL drugs");
-        if (stream == null)
-            throw new IOException("Unable to write drugs, target output stream is null");
-
-        try (Writer writer = new OutputStreamWriter(stream, StandardCharsets.UTF_8)) {
-            writer.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-            writer.write(System.lineSeparator());
-            createDrugsXStream().toXML(data, writer);
-        }
-        catch (RuntimeException e) {
-            throw new IOException("Unable to write drugs", e);
-        }
-    }
-
-    private static XStream createDrugsXStream() {
-        XStream xstream = new XStream(new PureJavaReflectionProvider(), new Xpp3Driver() {
-            @Override
-            public HierarchicalStreamWriter createWriter(Writer out) {
-                return new PrettyPrintWriter(out, "    ");
-            }
-        });
-        xstream.autodetectAnnotations(true);
-        xstream.alias("drugs", DrugsDataXmlDto.class);
-
-        // setup proper security by limiting what classes can be loaded by XStream
-        xstream.addPermission(NoTypePermission.NONE);
-        xstream.addPermission(new WildcardTypePermission(new String[] {"com.imsweb.seerdata.seerrx.xml.**"}));
-
-        return xstream;
     }
 
     /**
@@ -207,56 +122,6 @@ public class SeerRxUtils {
         finally {
             stream.close();
         }
-    }
-
-    /**
-     * Constructor.
-     * <p/>
-     * Created on May 8, 2012 by depryf
-     * @param data the data to initialize from
-     */
-    SeerRxUtils(DrugsDataXmlDto data) {
-
-        // drugs
-        _drugs = new HashMap<>();
-        for (DrugXmlDto dto : data.getDrug()) {
-            DrugDto drug = new DrugDto();
-
-            drug.getCategory().addAll(dto.getCategory());
-            drug.getSubCategory().addAll(dto.getSubCategory());
-            drug.getAbbreviation().addAll(dto.getAbbreviation());
-            drug.getAlternateName().addAll(dto.getAlternateName());
-            drug.getPrimarySite().addAll(dto.getPrimarySite());
-            drug.getNscNum().addAll(dto.getNscNum());
-            drug.setDoNotCode(dto.getDoNotCode());
-            drug.setHistology(dto.getHistology());
-            drug.setRemarks(dto.getRemarks());
-            drug.setName(dto.getName());
-            drug.setId(dto.getId());
-
-            _drugs.put(drug.getId(), drug);
-        }
-
-        // regimens
-        _regimens = new HashMap<>();
-        for (RegimenXmlDto dto : data.getRegimen()) {
-            RegimenDto regimen = new RegimenDto();
-
-            regimen.getDrug().addAll(dto.getDrug());
-            regimen.getAlternateName().addAll(dto.getAlternateName());
-            regimen.getPrimarySite().addAll(dto.getPrimarySite());
-            regimen.setHistology(dto.getHistology());
-            regimen.setRemarks(dto.getRemarks());
-            regimen.setRadiation(dto.getRadiation());
-            regimen.setName(dto.getName());
-            regimen.setId(dto.getId());
-
-            _regimens.put(regimen.getId(), regimen);
-        }
-
-        // other properties
-        _lastUpdated = data.getLastUpdated();
-        _dataStructureVersion = data.getDataStructureVersion();
     }
 
     /**
