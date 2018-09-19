@@ -1,5 +1,9 @@
 ## SEER Data Utility Library Version History
 
+**Changes in version 1.13**
+
+- Change a few methods in HematoDbUtils related to transformation; this was needed so this library can be used as a provider for MPH rules.
+
 **Changes in version 1.12**
 
 - Change a few methods in HematoDbUtils so they take two years as parameters instead of a single one.
