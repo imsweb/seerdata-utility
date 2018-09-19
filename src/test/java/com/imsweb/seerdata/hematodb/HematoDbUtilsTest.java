@@ -23,7 +23,7 @@ import com.imsweb.seerdata.hematodb.json.YearBasedDiseaseDto;
 import com.imsweb.seerdata.hematodb.json.YearRange;
 import com.imsweb.seerdata.hematodb.json.YearRangeString;
 
-public class HematoDbUtilsJsonTest {
+public class HematoDbUtilsTest {
 
     @Test
     public void testReadWrite() throws IOException {
@@ -220,49 +220,24 @@ public class HematoDbUtilsJsonTest {
     }
 
     @Test
-    public void testIsAcuteTransformation() throws IOException {
+    public void testCanTransformTo() throws IOException {
         HematoDbUtils.registerInstance(HematoDbUtils.readYearBasedDiseaseData(Thread.currentThread().getContextClassLoader().getResourceAsStream("diseases-data-test.json")));
         try {
 
             // Invalid codes
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation(null, null, 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", null, 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation(null, "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("  ", "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("8000/3", "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", "9737/03", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo(null, null, 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo("9737/3", null, 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo(null, "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo("  ", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo("8000/3", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo("9737/3", "9737/03", 2015, 2015));
 
-            Assert.assertTrue(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", "9870/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9870/3", "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9870/3", "9805/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9805/3", "9870/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9805/3", "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isAcuteTransformation("9737/3", "9805/3", 2015, 2015));
-        }
-        finally {
-            HematoDbUtils.unregisterInstance();
-        }
-    }
-
-    @Test
-    public void testIsChronicTransformation() throws IOException {
-        HematoDbUtils.registerInstance(HematoDbUtils.readYearBasedDiseaseData(Thread.currentThread().getContextClassLoader().getResourceAsStream("diseases-data-test.json")));
-        try {
-
-            // Invalid codes
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation(null, null, 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9737/3", null, 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation(null, "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("  ", "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("8000/3", "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9870/03", "9737/3", 2015, 2015));
-
-            Assert.assertTrue(HematoDbUtils.getInstance().isChronicTransformation("9870/3", "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9737/3", "9870/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9870/3", "9805/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9805/3", "9870/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9805/3", "9737/3", 2015, 2015));
-            Assert.assertFalse(HematoDbUtils.getInstance().isChronicTransformation("9737/3", "9805/3", 2015, 2015));
+            Assert.assertTrue(HematoDbUtils.getInstance().canTransformTo("9737/3", "9870/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo("9870/3", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo("9870/3", "9805/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo("9805/3", "9870/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo("9805/3", "9737/3", 2015, 2015));
+            Assert.assertFalse(HematoDbUtils.getInstance().canTransformTo("9737/3", "9805/3", 2015, 2015));
         }
         finally {
             HematoDbUtils.unregisterInstance();

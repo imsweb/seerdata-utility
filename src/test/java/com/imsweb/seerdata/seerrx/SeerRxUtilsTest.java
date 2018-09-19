@@ -20,7 +20,7 @@ import com.imsweb.seerdata.seerrx.json.DrugJsonDto;
 import com.imsweb.seerdata.seerrx.json.DrugsDataJsonDto;
 import com.imsweb.seerdata.seerrx.json.RegimenJsonDto;
 
-public class SeerRxUtilsJsonTest {
+public class SeerRxUtilsTest {
 
     @Test
     public void testReadWrite() throws IOException {
