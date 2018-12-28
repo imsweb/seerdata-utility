@@ -1,6 +1,5 @@
 # SEER Data Utility Library
 
-[![Build Status](https://travis-ci.org/imsweb/layout.svg?branch=master)](https://travis-ci.org/imsweb/seerdata-utility)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.imsweb/layout/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.imsweb/seerdata-utility)
 
 This project contains the Java entities and search utility methods for the HematoDB diseases and SEER*Rx drugs and regimens.
