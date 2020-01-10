@@ -1,7 +1,7 @@
 plugins {
     id 'java-library'
     id 'com.bmuschko.nexus' version '2.3.1'
-    id 'io.codearte.nexus-staging' version '0.8.0'
+    id 'io.codearte.nexus-staging' version '0.21.2'
 }
 
 group = 'com.imsweb'
@@ -17,12 +17,12 @@ repositories {
 }
 
 dependencies {
-    api 'com.thoughtworks.xstream:xstream:1.4.10'
-    api 'com.fasterxml.jackson.core:jackson-core:2.8.10'
-    api 'com.fasterxml.jackson.core:jackson-annotations:2.8.10'
-    api 'com.fasterxml.jackson.core:jackson-databind:2.8.10'
+    api 'com.thoughtworks.xstream:xstream:1.4.11.1'
+    api 'com.fasterxml.jackson.core:jackson-core:2.10.2'
+    api 'com.fasterxml.jackson.core:jackson-annotations:2.10.2'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.10.2'
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13'
     testImplementation 'commons-io:commons-io:2.6'
 }
 
@@ -116,7 +116,7 @@ if (version.endsWith('-SNAPSHOT'))
 
 // Gradle wrapper, this allows to build the project without having to install Gradle!
 wrapper {
-    gradleVersion = '5.0'
+    gradleVersion = '6.0.1'
     distributionType = Wrapper.DistributionType.ALL
 }
 

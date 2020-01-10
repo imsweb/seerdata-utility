@@ -1,5 +1,10 @@
 ## SEER Data Utility Library Version History
 
+**Changes in version 1.14**
+
+- Updated XStream library from version 1.4.10 to 1.4.11.1.
+- Updated JACKSON libraries from version 2.8.10 to version 2.10.2.
+
 **Changes in version 1.13**
 
 - Change a few methods in HematoDbUtils related to transformation; this was needed so this library can be used as a provider for MPH rules.
