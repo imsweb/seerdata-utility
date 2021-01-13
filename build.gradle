@@ -17,13 +17,13 @@ repositories {
 }
 
 dependencies {
-    api 'com.thoughtworks.xstream:xstream:1.4.11.1'
-    api 'com.fasterxml.jackson.core:jackson-core:2.10.2'
-    api 'com.fasterxml.jackson.core:jackson-annotations:2.10.2'
-    api 'com.fasterxml.jackson.core:jackson-databind:2.10.2'
+    api 'com.thoughtworks.xstream:xstream:1.4.15'
+    api 'com.fasterxml.jackson.core:jackson-core:2.12.1'
+    api 'com.fasterxml.jackson.core:jackson-annotations:2.12.1'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.12.1'
 
     testImplementation 'junit:junit:4.13'
-    testImplementation 'commons-io:commons-io:2.6'
+    testImplementation 'commons-io:commons-io:2.7'
 }
 
 // enforce UTF-8, display the compilation warnings
