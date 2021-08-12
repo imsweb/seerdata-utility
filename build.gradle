@@ -1,7 +1,11 @@
 plugins {
     id 'java-library'
-    id 'com.bmuschko.nexus' version '2.3.1'
-    id 'io.codearte.nexus-staging' version '0.21.2'
+    id 'maven-publish'
+    id 'signing'
+    id "io.codearte.nexus-staging" version '0.30.0'
+    id 'com.adarshr.test-logger' version '3.0.0'
+    id "com.github.ben-manes.versions" version '0.38.0'
+    id 'org.sonatype.gradle.plugins.scan' version '2.0.9'
 }
 
 group = 'com.imsweb'
@@ -17,13 +21,13 @@ repositories {
 }
 
 dependencies {
-    api 'com.thoughtworks.xstream:xstream:1.4.15'
-    api 'com.fasterxml.jackson.core:jackson-core:2.12.1'
-    api 'com.fasterxml.jackson.core:jackson-annotations:2.12.1'
-    api 'com.fasterxml.jackson.core:jackson-databind:2.12.1'
+    api 'com.thoughtworks.xstream:xstream:1.4.17'
+    api 'com.fasterxml.jackson.core:jackson-core:2.12.4'
+    api 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.12.4'
 
-    testImplementation 'junit:junit:4.13'
-    testImplementation 'commons-io:commons-io:2.7'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'commons-io:commons-io:2.11.0'
 }
 
 // enforce UTF-8, display the compilation warnings
@@ -35,6 +39,12 @@ tasks.withType(JavaCompile) {
 // the Javadoc was made way too strict in Java 8 and it's not worth the time fixing everything!
 tasks.withType(Javadoc) {
     options.addStringOption('Xdoclint:none', '-quiet')
+}
+
+// generate javadoc and sources (required by Nexus)
+java {
+    withJavadocJar()
+    withSourcesJar()
 }
 
 // customize the manifest
@@ -52,6 +62,22 @@ jar {
     }
 }
 
+// Nexus vulnerability scan (https://github.com/sonatype-nexus-community/scan-gradle-plugin)
+ossIndexAudit {
+    dependencyGraph = true
+    printBanner = false
+
+    // only set proxy if running outside of Github Actions
+    if (!System.getenv().GITHUB_ACTIONS) {
+        proxyConfiguration {
+            protocol = 'http'
+            host = 'webproxy-btp.imsweb.com'
+            port = 8080
+        }
+    }
+}
+check.dependsOn 'ossIndexAudit'
+
 // configure nexus staging plugin
 nexusStaging {
     numberOfRetries = 50
@@ -59,36 +85,74 @@ nexusStaging {
 }
 
 // needed to deploy to Maven Central
-modifyPom {
-    project {
-        name 'SEER Data Utility'
-        description 'SEER*Rx Drugs/regimens and HematoDB Diseases XML definitions and search utilities.'
-        url 'https://github.com/imsweb/seerdata-utility'
-        inceptionYear '2016'
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = 'seerdata-utility'
+            from components.java
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
+            pom {
+                name = 'SEER Data Utility'
+                description = 'SEER*Rx Drugs/regimens and HematoDB Diseases XML definitions and search utilities.'
+                url = 'https://github.com/imsweb/seerdata-utility'
+                inceptionYear = '2016'
 
-        scm {
-            url 'https://github.com/imsweb/seerdata-utility'
-            connection 'scm:https://github.com/imsweb/seerdata-utility.git'
-            developerConnection 'scm:git@github.com:imsweb/seerdata-utility.git'
-        }
+                licenses {
+                    license {
+                        name = 'A modified BSD License (BSD)'
+                        url = 'https://github.com/imsweb/seerdata-utility/blob/master/LICENSE'
+                        distribution = 'repo'
+                    }
+                }
 
-        licenses {
-            license {
-                name 'A modified BSD License (BSD)'
-                url 'https://github.com/imsweb/layout/blob/master/LICENSE'
-                distribution 'repo'
+                developers {
+                    developer {
+                        id = 'depryf'
+                        name = 'Fabian Depry'
+                        email = 'depryf@imsweb.com'
+                    }
+                }
+
+                scm {
+                    url = 'https://github.com/imsweb/seerdata-utility'
+                    connection = 'scm:https://github.com/imsweb/seerdata-utility.git'
+                    developerConnection = 'scm:git@github.com:imsweb/seerdata-utility.git'
+                }
             }
         }
+    }
+    repositories {
+        maven {
+            def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2"
+            def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots"
+            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
 
-        developers {
-            developer {
-                id 'depryf'
-                name 'Fabian Depry'
-                email 'depryf@imsweb.com'
+            credentials {
+                username = project.findProperty('nexusUsername') ?: ''
+                password = project.findProperty('nexusPassword') ?: ''
             }
         }
     }
 }
+
+// setup JAR signing
+signing {
+    def signingKey = project.findProperty('signingKey') ?: ''
+    def signingPassword = project.findProperty('signingPassword') ?: ''
+
+    useInMemoryPgpKeys(signingKey, signingPassword)
+
+    sign publishing.publications.mavenJava
+}
+
+
 // this will add the XML-related tasks
 configurations {
     xjc
@@ -117,12 +181,14 @@ task generateSeerrxXmlEntities {
 }
 
 // don't try to release a snapshot to a non-snapshot repository, that won't work anyway
-if (version.endsWith('-SNAPSHOT'))
+if (version.endsWith('-SNAPSHOT')) {
+    gradle.startParameter.excludedTaskNames += 'signMavenJavaPublication'
     gradle.startParameter.excludedTaskNames += 'closeAndReleaseRepository'
+}
 
 // Gradle wrapper, this allows to build the project without having to install Gradle!
 wrapper {
-    gradleVersion = '6.0.1'
+    gradleVersion = '7.1.1'
     distributionType = Wrapper.DistributionType.ALL
 }
 

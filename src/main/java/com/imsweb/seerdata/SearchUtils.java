@@ -26,8 +26,8 @@ public class SearchUtils {
     /**
      * Splits the provided search string by spaces. Keeps the tokens together if they are enclosed in double-quotes.
      * <p/>
-     * &nbsp;&nbsp;&nbsp;A B C -> [A, B, C]<br>
-     * &nbsp;&nbsp;&nbsp;"A B C" -> [A B C]
+     * &nbsp;&nbsp;&nbsp;A B C -&gth; [A, B, C]<br>
+     * &nbsp;&nbsp;&nbsp;"A B C" -&gth; [A B C]
      * <p/>
      * Created on Jan 2, 2011 by depryf
      * @param searchString the search string to split, can be null

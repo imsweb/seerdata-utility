@@ -232,8 +232,8 @@ public class SeerRxUtils {
      * </ol><br>
      * <p/>
      * The provided query string is first split into tokens using spaces, the tokens are kept together if they are enclosed in double-quotes:<br>
-     * &nbsp;&nbsp;&nbsp;A B C -> [A, B, C] (three different tokens)<br>
-     * &nbsp;&nbsp;&nbsp;"A B C" -> [A B C] (one token)<br>
+     * &nbsp;&nbsp;&nbsp;A B C -&gth; [A, B, C] (three different tokens)<br>
+     * &nbsp;&nbsp;&nbsp;"A B C" -&gth; [A B C] (one token)<br>
      * If the string is empty or null, it will not be split into tokens and an empty list of <code>DrugOrRegimenSearchResultDto</code> will be returned.<br><br>
      * Then the requested data (depending on the search mode) is weighted: each object is weighted individually for each token; the weight
      * of each token is summed and the object is added to the results if that total weight is greater than 0.
