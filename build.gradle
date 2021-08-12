@@ -144,6 +144,7 @@ publishing {
 
 // setup JAR signing
 signing {
+    println project.ext.get('signing.armored.key')
     def signingKey = project.hasProperty('signing.armored.key') ? project.ext.get('signing.armored.key') : null
     def signingPassword = project.hasProperty('signing.armored.password') ? project.ext.get('signing.armored.password') : null
 
