@@ -144,8 +144,8 @@ publishing {
 
 // setup JAR signing
 signing {
-    println project.ext.get('signing.armored.key').substring(0, 200)
-    def signingKey = project.hasProperty('signing.armored.key') ? project.ext.get('signing.armored.key') : null
+    println project.ext.get('signing.armored.key.multiline').substring(0, 200)
+    def signingKey = project.hasProperty('signing.armored.key') ? project.ext.get('signing.armored.key.multiline') : null
     def signingPassword = project.hasProperty('signing.armored.password') ? project.ext.get('signing.armored.password') : null
 
     useInMemoryPgpKeys(signingKey, signingPassword)
