@@ -36,6 +36,7 @@
             <xsd:element minOccurs="0" maxOccurs="unbounded" name="exam" type="xsd:string"/>
             <xsd:element minOccurs="0" maxOccurs="unbounded" name="progression" type="xsd:string"/>
             <xsd:element minOccurs="0" maxOccurs="unbounded" name="mortality" type="xsd:string"/>
+            <xsd:element minOccurs="0" maxOccurs="unbounded" name="diagnostic-confirmation" type="xsd:string"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
         <xsd:attribute name="name" type="xsd:string" use="optional"/>

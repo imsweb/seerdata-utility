@@ -38,7 +38,7 @@ public class HematoDbUtils {
     /**
      * Cached instances per DX year
      */
-    private static Map<Integer, HematoDbUtils> _INSTANCES = new HashMap<>();
+    private static final Map<Integer, HematoDbUtils> _INSTANCES = new HashMap<>();
 
     /**
      * Data for this instance

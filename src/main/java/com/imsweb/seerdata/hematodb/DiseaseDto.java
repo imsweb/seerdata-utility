@@ -32,6 +32,7 @@ public class DiseaseDto {
     protected List<String> _exam;
     protected List<String> _progression;
     protected List<String> _mortality;
+    protected List<String> _diagnosticConfirmation;
     protected List<String> _obsoleteNew;
     protected Boolean _obsolete;
     protected String _codeIcdO1Effective;
@@ -223,6 +224,13 @@ public class DiseaseDto {
             _mortality = new ArrayList<>();
         }
         return _mortality;
+    }
+
+    public List<String> getDiagnosticConfirmation() {
+        if (_diagnosticConfirmation == null) {
+            _diagnosticConfirmation = new ArrayList<>();
+        }
+        return _diagnosticConfirmation;
     }
 
     public List<String> getObsoleteNew() {

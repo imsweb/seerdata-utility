@@ -25,7 +25,6 @@ public class JsonUtils {
         _DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         //from seerapi-client-java
-        _MAPPER.configure(SerializationFeature.WRITE_NULL_MAP_VALUES, false);
         _MAPPER.setSerializationInclusion(Include.NON_NULL);
         // set Date objects to output in readable customized format
         _MAPPER.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);

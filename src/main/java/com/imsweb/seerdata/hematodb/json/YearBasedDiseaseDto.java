@@ -10,20 +10,14 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import com.imsweb.seerdata.hematodb.DiseaseDto;
 
+@SuppressWarnings("unused")
 public class YearBasedDiseaseDto {
 
-    /**
-     * Year-based diseases have a type; some fields only exists for a specific type...
-     */
+    // values for the datasources
     public enum Type {
-        /**
-         * Hematopoietic diseases
-         */
+        SOLID_TUMOR,
         HEMATO,
-        /**
-         * Solid tumor diseases
-         */
-        SOLID_TUMOR
+        NON_NEOPLASTIC
     }
 
     /**
@@ -35,8 +29,6 @@ public class YearBasedDiseaseDto {
     protected List<SiteRange> _primarySite;
     @JsonProperty("primary_site_text")
     protected String _primarySiteText;
-    @JsonProperty("site_category")
-    protected String _siteCategory;
     @JsonProperty("type")
     protected Type _type;
 
@@ -77,8 +69,6 @@ public class YearBasedDiseaseDto {
     protected List<YearRangeString> _sign;
     @JsonProperty("exams")
     protected List<YearRangeString> _exam;
-    @JsonProperty("progression")
-    protected List<YearRangeString> _progression;
     @JsonProperty("mortality")
     protected List<YearRangeString> _mortality;
     @JsonProperty("source")
@@ -119,14 +109,24 @@ public class YearBasedDiseaseDto {
     protected List<YearRangeString> _samePrimaries;
     @JsonProperty("same_primaries_text")
     protected List<YearRangeString> _samePrimaryText;
+    @JsonProperty("progression")
+    protected List<YearRangeString> _progression;
+    @JsonProperty("diagnostic_confirmation")
+    protected List<YearRangeString> _diagnosticConfirmation;
 
     /**
      * Solid tumor specific
      */
+    @JsonProperty("site_category")
+    protected String _siteCategory;
     @JsonProperty("biomarkers")
     protected List<YearRangeString> _biomarkers;
     @JsonProperty("treatment_text")
     protected List<YearRangeString> _treatmentText;
+    @JsonProperty("recurrence")
+    protected List<YearRangeString> _recurrence;
+    @JsonProperty("metastatic")
+    protected List<YearRangeString> _metastatic;
 
     /**
      * Disease information
@@ -478,6 +478,30 @@ public class YearBasedDiseaseDto {
         _treatmentText = treatmentText;
     }
 
+    public List<YearRangeString> getRecurrence() {
+        return _recurrence;
+    }
+
+    public void setRecurrence(List<YearRangeString> recurrence) {
+        _recurrence = recurrence;
+    }
+
+    public List<YearRangeString> getMetastatic() {
+        return _metastatic;
+    }
+
+    public void setMetastatic(List<YearRangeString> metastatic) {
+        _metastatic = metastatic;
+    }
+
+    public List<String> getDiagnosticConfirmation(Integer year) {
+        return getYearBasedStringList(year, _diagnosticConfirmation);
+    }
+
+    public void setDiagnosticConfirmation(List<YearRangeString> diagnosticConfirmation) {
+        _diagnosticConfirmation = diagnosticConfirmation;
+    }
+
     public String getFirstPublished() {
         return _firstPublished;
     }
@@ -612,6 +636,7 @@ public class YearBasedDiseaseDto {
         disease.setTransformToText(getTransformToText(year));
         disease.getTreatment().addAll(getTreatment(year));
         disease.getDiagnosisMethod().addAll(getDiagnosisMethod(year));
+        disease.getDiagnosticConfirmation().addAll(getDiagnosticConfirmation(year));
         disease.setAbstractorNote(getAbstractorNote(year));
         disease.getSamePrimary().addAll(getSamePrimary(year));
         disease.setSamePrimaryText(getSamePrimaryText(year));
@@ -624,10 +649,7 @@ public class YearBasedDiseaseDto {
                 if (range.getValue() != null)
                     disease.getIcd10CmCode().add(range.getValue());
         disease.setGrade(getGrade(year));
-        if ((getValid().getStartYear() == null || getValid().getStartYear() <= year) && (getValid().getEndYear() == null || getValid().getEndYear() >= year))
-            disease.setObsolete(false);
-        else
-            disease.setObsolete(true);
+        disease.setObsolete((getValid().getStartYear() != null && getValid().getStartYear() > year) || (getValid().getEndYear() != null && getValid().getEndYear() < year));
         disease.setReportable(getReportable());
         disease.setCodeIcdO1Effective(getIcdO1Effective() == null ? null : getIcdO1Effective().toString());
         disease.setCodeIcdO2Effective(getIcdO2Effective() == null ? null : getIcdO2Effective().toString());
