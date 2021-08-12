@@ -137,8 +137,6 @@ publishing {
             credentials {
                 username =  project.hasProperty('nexus.username') ? project.ext.get('nexus.username') : ''
                 password = project.hasProperty('nexus.password') ? project.ext.get('nexus.password') : ''
-
-                signing.armored.password
             }
         }
     }
