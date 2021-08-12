@@ -144,8 +144,8 @@ publishing {
 
 // setup JAR signing
 signing {
-    def signingKey = project.findProperty('signing.keyId') ?: ''
-    def signingPassword = project.findProperty('signing.password') ?: ''
+    def signingKey = project.findProperty('signing.armored.key') ?: ''
+    def signingPassword = project.findProperty('signing.armored.password') ?: ''
 
     useInMemoryPgpKeys(signingKey, signingPassword)
 
