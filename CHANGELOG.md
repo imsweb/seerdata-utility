@@ -1,5 +1,10 @@
 ## SEER Data Utility Library Version History
 
+**Changes in version 1.17**
+
+- Updated XStream library from version 1.4.17 to 1.4.18.
+- Updated JACKSON libraries from version 2.12.4 to version 2.12.5.
+
 **Changes in version 1.16**
 
 - Added new diagnosticConfirmation field to the Disease class.
