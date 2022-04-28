@@ -20,10 +20,10 @@ repositories {
 }
 
 dependencies {
-    api 'com.thoughtworks.xstream:xstream:1.4.18'
-    api 'com.fasterxml.jackson.core:jackson-core:2.12.5'
-    api 'com.fasterxml.jackson.core:jackson-annotations:2.12.5'
-    api 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
+    api 'com.thoughtworks.xstream:xstream:1.4.19'
+    api 'com.fasterxml.jackson.core:jackson-core:2.13.2'
+    api 'com.fasterxml.jackson.core:jackson-annotations:2.13.2'
+    api 'com.fasterxml.jackson.core:jackson-databind:2.13.2.2'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'commons-io:commons-io:2.11.0'
@@ -137,7 +137,7 @@ signing {
 nexusPublishing {
     repositories {
         sonatype {
-            stagingProfileId = 'ImsSeeDataUtilityProfileId'
+            stagingProfileId = '63e5ddd3ab0d16'
 
             username = project.findProperty("nexusUsername")
             password = project.findProperty("nexusPassword")

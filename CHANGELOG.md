@@ -1,5 +1,10 @@
 ## SEER Data Utility Library Version History
 
+**Changes in version 1.18**
+
+- Updated XStream library from version 1.4.18 to 1.4.19.
+- Updated JACKSON libraries from version 2.12.5 to version 2.13.2.
+
 **Changes in version 1.17**
 
 - Updated XStream library from version 1.4.17 to 1.4.18.
