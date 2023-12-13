@@ -1,5 +1,7 @@
 # SEER Data Utility Library
 
+**!!! THIS PROJECT IS NOW DEPRECATED AND IS GOING TO BE REMOVED SOON !!!**
+
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.imsweb/layout/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.imsweb/seerdata-utility)
 
 This project contains the Java entities and search utility methods for the HematoDB diseases and SEER*Rx drugs and regimens.
